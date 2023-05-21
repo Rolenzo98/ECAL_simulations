@@ -8,15 +8,20 @@
 #ifndef EcalSimHandler_h
 #define EcalSimHandler_h
 
+#include <iostream>
+
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
 #include <TSystemFile.h>
+#include <TSystem.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
 
 using std::vector;
+using std::cout;
+using std::endl;
 
 class EcalSimHandler {
 public :
@@ -153,8 +158,14 @@ EcalSimHandler::EcalSimHandler(TString tree_s) : fChain(0)
   //    f->GetObject("PfoAnalysisTree",tree);
 
   // }
+  // TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(tree_s);
+  TFile *f;
+  if (!gSystem->AccessPathName(tree_s)) {
+    f = new TFile(tree_s);
+  }else{
+    throw 1;
+  }
 
-  TFile *f = new TFile(tree_s);
   TTree *tree = (TTree*)f->Get("PfoAnalysisTree");
   Init(tree);
 }
