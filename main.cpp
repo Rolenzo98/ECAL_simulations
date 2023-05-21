@@ -2,39 +2,49 @@
 
 #include <iostream>
 #include <string>
-//#include <TFile.h>
-//#include <TString.h>
-//#include <TTree.h>
+#include "EcalSimHandler.hh"
+
+using std::cerr;
 
 int main(int argc, char* argv[]) {
-	using std::cout;
-	using std::endl;
 
 	try
 	{
 		if (argv[1]) {
+			cout << "\n";
 			cout << "The file is processing: " << argv[1] << endl;
+			cout << "\n";
 		}
 		else {
 			throw 0;
 			//throw return to the catch
 		}
 
+		// Check output
+		cout << "======================================\n";
+						"============== ECAL SIM ==============\n";
+						"\n";
+
+		EcalSimHandler esimh(argv[1]);
+
+		cout << "\n";
+						"======================================\n";
 
 	}
 	catch (int exc)
 	{
-		std::cerr << "[Error] There's an error.\n";
+		cerr << "\n";
 		switch (exc) {
 		case 0:
-			std::cout << "there's no file\n";
+			cerr << "[Error 000] No inputs given.\n";
 			break;
 		case 1:
-			std::cout << "second error\n";
+			cerr << "[Error 001] File does not exist.\n";
 			break;
 		default:
 			break;
 		}
+		cerr << "\n";
 
 	}
 

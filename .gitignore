@@ -1,2 +1,11 @@
 .vs/
+*json
 *.exe
+
+# data sets
+data/
+*.root
+
+# cmake
+build/
+*.sh
