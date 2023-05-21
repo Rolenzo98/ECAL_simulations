@@ -1,3 +1,7 @@
 .vs/
+*json
 *.exe
+
+# data sets
+data/
 *.root
