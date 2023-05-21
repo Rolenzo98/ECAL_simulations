@@ -20,6 +20,15 @@ int main(int argc, char* argv[]) {
 			//throw return to the catch
 		}
 
+		// Check output
+		cout << "======================================\n"
+						"============== ECAL SIM ==============\n"
+						"\n";
+
+		EcalSimHandler esimh(argv[1])
+
+		cout << "\n"
+						"======================================\n";
 
 	}
 	catch (int exc)
