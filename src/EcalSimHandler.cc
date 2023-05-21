@@ -1,8 +1,5 @@
 #define EcalSimHandler_cxx
 #include "EcalSimHandler.hh"
-#include <TH2.h>
-#include <TStyle.h>
-#include <TCanvas.h>
 
 void EcalSimHandler::Loop()
 {
