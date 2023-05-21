@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include "EcalSimHandler.hh"
 //#include <TFile.h>
 //#include <TString.h>
 //#include <TTree.h>
@@ -21,13 +22,13 @@ int main(int argc, char* argv[]) {
 		}
 
 		// Check output
-		cout << "======================================\n"
-						"============== ECAL SIM ==============\n"
+		cout << "======================================\n";
+						"============== ECAL SIM ==============\n";
 						"\n";
 
-		EcalSimHandler esimh(argv[1])
+		EcalSimHandler esimh(argv[1]);
 
-		cout << "\n"
+		cout << "\n";
 						"======================================\n";
 
 	}
