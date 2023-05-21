@@ -11,10 +11,12 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TSystemFile.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
-#include "vector"
+
+using std::vector;
 
 class EcalSimHandler {
 public :
@@ -126,7 +128,7 @@ public :
   EcalSimHandler(TString tree_s);
   EcalSimHandler(TList *f=0);
   virtual ~EcalSimHandler();
-  
+
   virtual Int_t    Cut(Long64_t entry);
   virtual Int_t    GetEntry(Long64_t entry);
   virtual Long64_t LoadTree(Long64_t entry);
