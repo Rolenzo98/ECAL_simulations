@@ -37,7 +37,7 @@ void EcalSimHandler::Loop()
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     // if (Cut(ientry) < 0) continue;
 
-    cout << event << endl;
+    cout << nPfosPhotons << endl;
 
   }
 
