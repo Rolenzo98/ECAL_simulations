@@ -5,6 +5,7 @@
 #include "EcalSimHandler.hh"
 
 using std::cerr;
+// cerr means "character error (stream)"
 
 int main(int argc, char* argv[]) {
 

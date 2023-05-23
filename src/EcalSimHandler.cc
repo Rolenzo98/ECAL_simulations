@@ -30,6 +30,12 @@ void EcalSimHandler::Loop()
 
   Long64_t nentries = fChain->GetEntriesFast();
 
+  // MODIFY FROM HERE
+
+  // TH1F * hist = new TH1F("hist","hist",100,0,100);
+
+  // TIL HERE
+
   Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
     Long64_t ientry = LoadTree(jentry);
@@ -37,8 +43,27 @@ void EcalSimHandler::Loop()
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     // if (Cut(ientry) < 0) continue;
 
-    cout << nPfosPhotons << endl;
+    // MODIFY FROM HERE
+
+    cout << "Number of PFO : " << nPfosTotal << " = " << pfoEnergies->size() << endl;
+    // hist->Fill(nPfosPhotons);
+
+    if (nPfosTotal == pfoEnergies->size()) {
+      cout << "print energy ";
+       for ( int ipfo=0; ipfo < nPfosTotal; ipfo++ ){
+        cout << pfoEnergies->at(ipfo) << " ";
+       }
+       cout << endl;
+    }
+ 
+
+
+    // TIL HERE
 
   }
+
+  // MODIFY FROM HERE
+
+  // TIL HERE
 
 }
