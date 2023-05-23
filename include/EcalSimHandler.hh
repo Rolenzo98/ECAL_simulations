@@ -6,14 +6,31 @@
 //////////////////////////////////////////////////////////
 
 #ifndef EcalSimHandler_h
+// if not defined, then define
 #define EcalSimHandler_h
 
+/* Those are called #include guards.
+Once the header is included, it checks if a unique value (in this case EcalSimHandler_h) is defined. 
+Then if it's not defined, it defines it and continues to the rest of the page.
+When the code is included again, the first ifndef fails, resulting in a blank file.
+That prevents double declaration of any identifiers such as types, enums and static variables.
+*/
+
 #include <iostream>
+// standard input-output stream
 
 #include <TROOT.h>
+// The TROOT object is the entry point to the ROOT system
 #include <TChain.h>
+/*A chain is a collection of files containing TTree objects.
+When the chain is created, the first parameter is the default name for the Tree to be processed later on.
+Enter a new element in the chain via the TChain::Add function. Once a chain is defined, 
+one can use the normal TTree functions to Draw,Scan,etc.*/
 #include <TFile.h>
+/*A ROOT file is a suite of consecutive data records (TKey instances) with a well defined format.*/
 #include <TSystemFile.h>
+/*A TSystemFile describes an operating system file.
+The information is used by the browser (see TBrowser).*/
 #include <TSystem.h>
 
 // Header file for the classes stored in the TTree if any.
@@ -23,6 +40,7 @@ using std::vector;
 using std::cout;
 using std::endl;
 
+// initialising a class called EcalSimHandler
 class EcalSimHandler {
 public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -30,13 +48,14 @@ public :
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
-  // Declaration of leaf types
+  // Declaration of leaf types. At every variable corresponds a leaf
   Int_t           run;
   Int_t           event;
   Int_t           nPfosTotal;
   Int_t           nPfosNeutralHadrons;
   Int_t           nPfosPhotons;
   Int_t           nPfosTracks;
+  // until here they are integer numbers
   Float_t         pfoEnergyTotal;
   Float_t         pfoEnergyNeutralHadrons;
   Float_t         pfoEnergyPhotons;
@@ -48,6 +67,7 @@ public :
   Float_t         pfoOtherEnergy;
   Float_t         pfoMuonToEnergy;
   Float_t         pfoMassTotal;
+  // until here they are float numbers
   vector<float>   *pfoEnergies;
   vector<float>   *pfoPx;
   vector<float>   *pfoPy;
@@ -60,6 +80,7 @@ public :
   vector<float>   *pfoTargetCosTheta;
   vector<int>     *pfoPdgCodes;
   vector<int>     *pfoTargetPdgCodes;
+  // until here they are pointers of vectors, with elements integer or floats
   Int_t           nPfoTargetsTotal;
   Int_t           nPfoTargetsNeutralHadrons;
   Int_t           nPfoTargetsPhotons;
@@ -70,6 +91,7 @@ public :
   Float_t         pfoTargetsEnergyTracks;
   Float_t         mcEnergyENu;
   Float_t         mcEnergyFwd;
+  // I don't know what those two lasts variables mean
   Float_t         eQQ;
   Float_t         eQ1;
   Float_t         eQ2;
@@ -79,8 +101,9 @@ public :
   Float_t         mQQ;
   Float_t         thrust;
   Int_t           qPdg;
+  // I don't know what all these variables mean
 
-  // List of branches
+  // List of branches (they are all pointers)
   TBranch        *b_run;   //!
   TBranch        *b_event;   //!
   TBranch        *b_nPfosTotal;   //!
@@ -144,8 +167,10 @@ public :
 };
 
 #endif
+// end the ifndef in the first part
 
 #ifdef EcalSimHandler_cxx
+// if defined, then...
 EcalSimHandler::EcalSimHandler(TString tree_s) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
