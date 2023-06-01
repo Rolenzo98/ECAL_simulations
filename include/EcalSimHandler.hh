@@ -32,9 +32,11 @@ one can use the normal TTree functions to Draw,Scan,etc.*/
 /*A TSystemFile describes an operating system file.
 The information is used by the browser (see TBrowser).*/
 #include <TSystem.h>
+#include <TH1.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
+#include <numeric>
 
 using std::vector;
 using std::cout;
@@ -79,6 +81,8 @@ public :
   vector<float>   *pfoTargetPz;
   vector<float>   *pfoTargetCosTheta;
   vector<int>     *pfoPdgCodes;
+  // particle data group, a group of scientists that make an overall analysis of datas. It's a convention, a nickname for every particle
+
   vector<int>     *pfoTargetPdgCodes;
   // until here they are pointers of vectors, with elements integer or floats
   Int_t           nPfoTargetsTotal;
@@ -91,7 +95,7 @@ public :
   Float_t         pfoTargetsEnergyTracks;
   Float_t         mcEnergyENu;
   Float_t         mcEnergyFwd;
-  // I don't know what those two lasts variables mean
+  // I don't know what those two lasts variables mean.
   Float_t         eQQ;
   Float_t         eQ1;
   Float_t         eQ2;
