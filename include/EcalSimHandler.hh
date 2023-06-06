@@ -51,111 +51,256 @@ public :
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
   // Declaration of leaf types. At every variable corresponds a leaf
-  Int_t           run;
-  Int_t           event;
-  Int_t           nPfosTotal;
-  Int_t           nPfosNeutralHadrons;
-  Int_t           nPfosPhotons;
-  Int_t           nPfosTracks;
-  // until here they are integer numbers
-  Float_t         pfoEnergyTotal;
-  Float_t         pfoEnergyNeutralHadrons;
-  Float_t         pfoEnergyPhotons;
-  Float_t         pfoEnergyTracks;
-  Float_t         pfoECalToEmEnergy;
-  Float_t         pfoECalToHadEnergy;
-  Float_t         pfoHCalToEmEnergy;
-  Float_t         pfoHCalToHadEnergy;
-  Float_t         pfoOtherEnergy;
-  Float_t         pfoMuonToEnergy;
-  Float_t         pfoMassTotal;
-  // until here they are float numbers
-  vector<float>   *pfoEnergies;
-  vector<float>   *pfoPx;
-  vector<float>   *pfoPy;
-  vector<float>   *pfoPz;
-  vector<float>   *pfoCosTheta;
-  vector<float>   *pfoTargetEnergies;
-  vector<float>   *pfoTargetPx;
-  vector<float>   *pfoTargetPy;
-  vector<float>   *pfoTargetPz;
-  vector<float>   *pfoTargetCosTheta;
-  vector<int>     *pfoPdgCodes;
-  // particle data group, a group of scientists that make an overall analysis of datas. It's a convention, a nickname for every particle
-
-  vector<int>     *pfoTargetPdgCodes;
-  // until here they are pointers of vectors, with elements integer or floats
-  Int_t           nPfoTargetsTotal;
-  Int_t           nPfoTargetsNeutralHadrons;
-  Int_t           nPfoTargetsPhotons;
-  Int_t           nPfoTargetsTracks;
-  Float_t         pfoTargetsEnergyTotal;
-  Float_t         pfoTargetsEnergyNeutralHadrons;
-  Float_t         pfoTargetsEnergyPhotons;
-  Float_t         pfoTargetsEnergyTracks;
-  Float_t         mcEnergyENu;
-  Float_t         mcEnergyFwd;
-  // I don't know what those two lasts variables mean.
-  Float_t         eQQ;
-  Float_t         eQ1;
-  Float_t         eQ2;
-  Float_t         costQQ;
-  Float_t         costQ1;
-  Float_t         costQ2;
-  Float_t         mQQ;
-  Float_t         thrust;
-  Int_t           qPdg;
+   Int_t           evevt;
+   Int_t           evrun;
+   Float_t         evwgt;
+   Long64_t        evtim;
+   Float_t         evsig;
+   Float_t         evene;
+   Float_t         evpoe;
+   Float_t         evpop;
+   Int_t           evnch;
+   Char_t          evpro[1];   //[evnch]
+   Int_t           nmcp;
+   Int_t           mcori[30];   //[nmcp]
+   Int_t           mcpdg[30];   //[nmcp]
+   Int_t           mcgst[30];   //[nmcp]
+   Int_t           mcsst[30];   //[nmcp]
+   Float_t         mcvtx[30];   //[nmcp]
+   Float_t         mcvty[30];   //[nmcp]
+   Float_t         mcvtz[30];   //[nmcp]
+   Float_t         mcepx[30];   //[nmcp]
+   Float_t         mcepy[30];   //[nmcp]
+   Float_t         mcepz[30];   //[nmcp]
+   Float_t         mcmox[30];   //[nmcp]
+   Float_t         mcmoy[30];   //[nmcp]
+   Float_t         mcmoz[30];   //[nmcp]
+   Float_t         mcmas[30];   //[nmcp]
+   Float_t         mcene[30];   //[nmcp]
+   Float_t         mccha[30];   //[nmcp]
+   Float_t         mctim[30];   //[nmcp]
+   Float_t         mcspx[30];   //[nmcp]
+   Float_t         mcspy[30];   //[nmcp]
+   Float_t         mcspz[30];   //[nmcp]
+   Int_t           mccf0[30];   //[nmcp]
+   Int_t           mccf1[30];   //[nmcp]
+   Int_t           mcpa0[30];   //[nmcp]
+   Int_t           mcpa1[30];   //[nmcp]
+   Int_t           mcda0[30];   //[nmcp]
+   Int_t           mcda1[30];   //[nmcp]
+   Int_t           mcda2[30];   //[nmcp]
+   Int_t           mcda3[30];   //[nmcp]
+   Int_t           mcda4[30];   //[nmcp]
+   Int_t           nrec;
+   Int_t           rcori[1];   //[nrec]
+   Int_t           rccid[1];   //[nrec]
+   Int_t           rctyp[1];   //[nrec]
+   Float_t         rccov[1][10];   //[nrec]
+   Float_t         rcrpx[1];   //[nrec]
+   Float_t         rcrpy[1];   //[nrec]
+   Float_t         rcrpz[1];   //[nrec]
+   Float_t         rcgpi[1];   //[nrec]
+   Int_t           rcpiu[1];   //[nrec]
+   Int_t           rcnpi[1];   //[nrec]
+   Int_t           rcfpi[1];   //[nrec]
+   Float_t         rcmox[1];   //[nrec]
+   Float_t         rcmoy[1];   //[nrec]
+   Float_t         rcmoz[1];   //[nrec]
+   Float_t         rcmas[1];   //[nrec]
+   Float_t         rcene[1];   //[nrec]
+   Float_t         rccha[1];   //[nrec]
+   Int_t           rcntr[1];   //[nrec]
+   Int_t           rcncl[1];   //[nrec]
+   Int_t           rcnrp[1];   //[nrec]
+   Int_t           rcftr[1];   //[nrec]
+   Int_t           rcvts[1];   //[nrec]
+   Int_t           rcvte[1];   //[nrec]
+   Int_t           rccom[1];   //[nrec]
+   Int_t           npid;
+   Int_t           pityp[1];   //[npid]
+   Int_t           pipdg[1];   //[npid]
+   Float_t         pillh[1];   //[npid]
+   Int_t           pialg[1];   //[npid]
+   Int_t           ntrk;
+   Int_t           trori[1];   //[ntrk]
+   Int_t           trtyp[1];   //[ntrk]
+   Float_t         trch2[1];   //[ntrk]
+   Int_t           trndf[1];   //[ntrk]
+   Float_t         tredx[1];   //[ntrk]
+   Float_t         trede[1];   //[ntrk]
+   Float_t         trrih[1];   //[ntrk]
+   Int_t           trshn[1][12];   //[ntrk]
+   Int_t           trnts[1];   //[ntrk]
+   Int_t           trfts[1];   //[ntrk]
+   Int_t           trsip[1];   //[ntrk]
+   Int_t           trsfh[1];   //[ntrk]
+   Int_t           trslh[1];   //[ntrk]
+   Int_t           trsca[1];   //[ntrk]
+   Int_t           ntrst;
+   Int_t           tsloc[1];   //[ntrst]
+   Float_t         tsdze[1];   //[ntrst]
+   Float_t         tsphi[1];   //[ntrst]
+   Float_t         tsome[1];   //[ntrst]
+   Float_t         tszze[1];   //[ntrst]
+   Float_t         tstnl[1];   //[ntrst]
+   Float_t         tscov[1][15];   //[ntrst]
+   Float_t         tsrpx[1];   //[ntrst]
+   Float_t         tsrpy[1];   //[ntrst]
+   Float_t         tsrpz[1];   //[ntrst]
+   Int_t           nsth;
+   Int_t           stori[8749];   //[nsth]
+   Int_t           stci0[8749];   //[nsth]
+   Int_t           stci1[8749];   //[nsth]
+   Double_t        stpox[8749];   //[nsth]
+   Double_t        stpoy[8749];   //[nsth]
+   Double_t        stpoz[8749];   //[nsth]
+   Float_t         stedp[8749];   //[nsth]
+   Float_t         sttim[8749];   //[nsth]
+   Float_t         stmox[8749];   //[nsth]
+   Float_t         stmoy[8749];   //[nsth]
+   Float_t         stmoz[8749];   //[nsth]
+   Float_t         stptl[8749];   //[nsth]
+   Int_t           stmcp[8749];   //[nsth]
+   Int_t           nsch;
+   Int_t           scori[1342];   //[nsch]
+   Int_t           scci0[1342];   //[nsch]
+   Int_t           scci1[1342];   //[nsch]
+   Float_t         scpox[1342];   //[nsch]
+   Float_t         scpoy[1342];   //[nsch]
+   Float_t         scpoz[1342];   //[nsch]
+   Float_t         scene[1342];   //[nsch]
+   Float_t         sctime[1342];   //[nsch]
+   Int_t           r2mnrel;
+   Int_t           r2mf[1];   //[r2mnrel]
+   Int_t           r2mt[1];   //[r2mnrel]
+   Float_t         r2mw[1];   //[r2mnrel]
   // I don't know what all these variables mean
 
   // List of branches (they are all pointers)
-  TBranch        *b_run;   //!
-  TBranch        *b_event;   //!
-  TBranch        *b_nPfosTotal;   //!
-  TBranch        *b_nPfosNeutralHadrons;   //!
-  TBranch        *b_nPfosPhotons;   //!
-  TBranch        *b_nPfosTracks;   //!
-  TBranch        *b_pfoEnergyTotal;   //!
-  TBranch        *b_pfoEnergyNeutralHadrons;   //!
-  TBranch        *b_pfoEnergyPhotons;   //!
-  TBranch        *b_pfoEnergyTracks;   //!
-  TBranch        *b_pfoECalToEmEnergy;   //!
-  TBranch        *b_pfoECalToHadEnergy;   //!
-  TBranch        *b_pfoHCalToEmEnergy;   //!
-  TBranch        *b_pfoHCalToHadEnergy;   //!
-  TBranch        *b_pfoOtherEnergy;   //!
-  TBranch        *b_pfoMuonToEnergy;   //!
-  TBranch        *b_pfoMassTotal;   //!
-  TBranch        *b_pfoEnergies;   //!
-  TBranch        *b_pfoPx;   //!
-  TBranch        *b_pfoPy;   //!
-  TBranch        *b_pfoPz;   //!
-  TBranch        *b_pfoCosTheta;   //!
-  TBranch        *b_pfoTargetEnergies;   //!
-  TBranch        *b_pfoTargetPx;   //!
-  TBranch        *b_pfoTargetPy;   //!
-  TBranch        *b_pfoTargetPz;   //!
-  TBranch        *b_pfoTargetCosTheta;   //!
-  TBranch        *b_pfoPdgCodes;   //!
-  TBranch        *b_pfoTargetPdgCodes;   //!
-  TBranch        *b_nPfoTargetsTotal;   //!
-  TBranch        *b_nPfoTargetsNeutralHadrons;   //!
-  TBranch        *b_nPfoTargetsPhotons;   //!
-  TBranch        *b_nPfoTargetsTracks;   //!
-  TBranch        *b_pfoTargetsEnergyTotal;   //!
-  TBranch        *b_pfoTargetsEnergyNeutralHadrons;   //!
-  TBranch        *b_pfoTargetsEnergyPhotons;   //!
-  TBranch        *b_pfoTargetsEnergyTracks;   //!
-  TBranch        *b_mcEnergyENu;   //!
-  TBranch        *b_mcEnergyFwd;   //!
-  TBranch        *b_eQQ;   //!
-  TBranch        *b_eQ1;   //!
-  TBranch        *b_eQ2;   //!
-  TBranch        *b_costQQ;   //!
-  TBranch        *b_costQ1;   //!
-  TBranch        *b_costQ2;   //!
-  TBranch        *b_mQQ;   //!
-  TBranch        *b_thrust;   //!
-  TBranch        *b_qPdg;   //!
+   TBranch        *b_evevt;   //!
+   TBranch        *b_evrun;   //!
+   TBranch        *b_evwgt;   //!
+   TBranch        *b_evtim;   //!
+   TBranch        *b_evsig;   //!
+   TBranch        *b_evene;   //!
+   TBranch        *b_evpoe;   //!
+   TBranch        *b_evpop;   //!
+   TBranch        *b_evnch;   //!
+   TBranch        *b_evpro;   //!
+   TBranch        *b_nmcp;   //!
+   TBranch        *b_mcori;   //!
+   TBranch        *b_mcpdg;   //!
+   TBranch        *b_mcgst;   //!
+   TBranch        *b_mcsst;   //!
+   TBranch        *b_mcvtx;   //!
+   TBranch        *b_mcvty;   //!
+   TBranch        *b_mcvtz;   //!
+   TBranch        *b_mcepx;   //!
+   TBranch        *b_mcepy;   //!
+   TBranch        *b_mcepz;   //!
+   TBranch        *b_mcmox;   //!
+   TBranch        *b_mcmoy;   //!
+   TBranch        *b_mcmoz;   //!
+   TBranch        *b_mcmas;   //!
+   TBranch        *b_mcene;   //!
+   TBranch        *b_mccha;   //!
+   TBranch        *b_mctim;   //!
+   TBranch        *b_mcspx;   //!
+   TBranch        *b_mcspy;   //!
+   TBranch        *b_mcspz;   //!
+   TBranch        *b_mccf0;   //!
+   TBranch        *b_mccf1;   //!
+   TBranch        *b_mcpa0;   //!
+   TBranch        *b_mcpa1;   //!
+   TBranch        *b_mcda0;   //!
+   TBranch        *b_mcda1;   //!
+   TBranch        *b_mcda2;   //!
+   TBranch        *b_mcda3;   //!
+   TBranch        *b_mcda4;   //!
+   TBranch        *b_nrec;   //!
+   TBranch        *b_rcori;   //!
+   TBranch        *b_rccid;   //!
+   TBranch        *b_rctyp;   //!
+   TBranch        *b_rccov;   //!
+   TBranch        *b_rcrpx;   //!
+   TBranch        *b_rcrpy;   //!
+   TBranch        *b_rcrpz;   //!
+   TBranch        *b_rcgpi;   //!
+   TBranch        *b_rcpiu;   //!
+   TBranch        *b_rcnpi;   //!
+   TBranch        *b_rcfpi;   //!
+   TBranch        *b_rcmox;   //!
+   TBranch        *b_rcmoy;   //!
+   TBranch        *b_rcmoz;   //!
+   TBranch        *b_rcmas;   //!
+   TBranch        *b_rcene;   //!
+   TBranch        *b_rccha;   //!
+   TBranch        *b_rcntr;   //!
+   TBranch        *b_rcncl;   //!
+   TBranch        *b_rcnrp;   //!
+   TBranch        *b_rcftr;   //!
+   TBranch        *b_rcvts;   //!
+   TBranch        *b_rcvte;   //!
+   TBranch        *b_rccom;   //!
+   TBranch        *b_npid;   //!
+   TBranch        *b_pityp;   //!
+   TBranch        *b_pipdg;   //!
+   TBranch        *b_pillh;   //!
+   TBranch        *b_pialg;   //!
+   TBranch        *b_ntrk;   //!
+   TBranch        *b_trori;   //!
+   TBranch        *b_trtyp;   //!
+   TBranch        *b_trch2;   //!
+   TBranch        *b_trndf;   //!
+   TBranch        *b_tredx;   //!
+   TBranch        *b_trede;   //!
+   TBranch        *b_trrih;   //!
+   TBranch        *b_trshn;   //!
+   TBranch        *b_trnts;   //!
+   TBranch        *b_trfts;   //!
+   TBranch        *b_trsip;   //!
+   TBranch        *b_trsfh;   //!
+   TBranch        *b_trslh;   //!
+   TBranch        *b_trsca;   //!
+   TBranch        *b_ntrst;   //!
+   TBranch        *b_tsloc;   //!
+   TBranch        *b_tsdze;   //!
+   TBranch        *b_tsphi;   //!
+   TBranch        *b_tsome;   //!
+   TBranch        *b_tszze;   //!
+   TBranch        *b_tstnl;   //!
+   TBranch        *b_tscov;   //!
+   TBranch        *b_tsrpx;   //!
+   TBranch        *b_tsrpy;   //!
+   TBranch        *b_tsrpz;   //!
+   TBranch        *b_nsth;   //!
+   TBranch        *b_stori;   //!
+   TBranch        *b_stci0;   //!
+   TBranch        *b_stci1;   //!
+   TBranch        *b_stpox;   //!
+   TBranch        *b_stpoy;   //!
+   TBranch        *b_stpoz;   //!
+   TBranch        *b_stedp;   //!
+   TBranch        *b_sttim;   //!
+   TBranch        *b_stmox;   //!
+   TBranch        *b_stmoy;   //!
+   TBranch        *b_stmoz;   //!
+   TBranch        *b_stptl;   //!
+   TBranch        *b_stmcp;   //!
+   TBranch        *b_nsch;   //!
+   TBranch        *b_scori;   //!
+   TBranch        *b_scci0;   //!
+   TBranch        *b_scci1;   //!
+   TBranch        *b_scpox;   //!
+   TBranch        *b_scpoy;   //!
+   TBranch        *b_scpoz;   //!
+   TBranch        *b_scene;   //!
+   TBranch        *b_sctime;   //!
+   TBranch        *b_r2mnrel;   //!
+   TBranch        *b_r2mf;   //!
+   TBranch        *b_r2mt;   //!
+   TBranch        *b_r2mw;   //!
+  
 
   EcalSimHandler(TString tree_s);
   EcalSimHandler(TList *f=0);
@@ -195,7 +340,7 @@ EcalSimHandler::EcalSimHandler(TString tree_s) : fChain(0)
     throw 1;
   }
 
-  TTree *tree = (TTree*)f->Get("PfoAnalysisTree");
+  TTree *tree = (TTree*)f->Get("MyLCTuple");
   Init(tree);
 }
 
@@ -210,7 +355,7 @@ EcalSimHandler::EcalSimHandler(TList *f) : fChain(0)
       fname = file->GetName();
       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(fname);
       TTree *tree=0;
-      f->GetObject("PfoAnalysisTree",tree);
+      f->GetObject("MyLCTuple",tree);
       Init(tree);
    }
 }
@@ -269,55 +414,130 @@ void EcalSimHandler::Init(TTree *tree)
   fCurrent = -1;
   fChain->SetMakeClass(1);
 
-  fChain->SetBranchAddress("run", &run, &b_run);
-  fChain->SetBranchAddress("event", &event, &b_event);
-  fChain->SetBranchAddress("nPfosTotal", &nPfosTotal, &b_nPfosTotal);
-  fChain->SetBranchAddress("nPfosNeutralHadrons", &nPfosNeutralHadrons, &b_nPfosNeutralHadrons);
-  fChain->SetBranchAddress("nPfosPhotons", &nPfosPhotons, &b_nPfosPhotons);
-  fChain->SetBranchAddress("nPfosTracks", &nPfosTracks, &b_nPfosTracks);
-  fChain->SetBranchAddress("pfoEnergyTotal", &pfoEnergyTotal, &b_pfoEnergyTotal);
-  fChain->SetBranchAddress("pfoEnergyNeutralHadrons", &pfoEnergyNeutralHadrons, &b_pfoEnergyNeutralHadrons);
-  fChain->SetBranchAddress("pfoEnergyPhotons", &pfoEnergyPhotons, &b_pfoEnergyPhotons);
-  fChain->SetBranchAddress("pfoEnergyTracks", &pfoEnergyTracks, &b_pfoEnergyTracks);
-  fChain->SetBranchAddress("pfoECalToEmEnergy", &pfoECalToEmEnergy, &b_pfoECalToEmEnergy);
-  fChain->SetBranchAddress("pfoECalToHadEnergy", &pfoECalToHadEnergy, &b_pfoECalToHadEnergy);
-  fChain->SetBranchAddress("pfoHCalToEmEnergy", &pfoHCalToEmEnergy, &b_pfoHCalToEmEnergy);
-  fChain->SetBranchAddress("pfoHCalToHadEnergy", &pfoHCalToHadEnergy, &b_pfoHCalToHadEnergy);
-  fChain->SetBranchAddress("pfoOtherEnergy", &pfoOtherEnergy, &b_pfoOtherEnergy);
-  fChain->SetBranchAddress("pfoMuonToEnergy", &pfoMuonToEnergy, &b_pfoMuonToEnergy);
-  fChain->SetBranchAddress("pfoMassTotal", &pfoMassTotal, &b_pfoMassTotal);
-  fChain->SetBranchAddress("pfoEnergies", &pfoEnergies, &b_pfoEnergies);
-  fChain->SetBranchAddress("pfoPx", &pfoPx, &b_pfoPx);
-  fChain->SetBranchAddress("pfoPy", &pfoPy, &b_pfoPy);
-  fChain->SetBranchAddress("pfoPz", &pfoPz, &b_pfoPz);
-  fChain->SetBranchAddress("pfoCosTheta", &pfoCosTheta, &b_pfoCosTheta);
-  fChain->SetBranchAddress("pfoTargetEnergies", &pfoTargetEnergies, &b_pfoTargetEnergies);
-  fChain->SetBranchAddress("pfoTargetPx", &pfoTargetPx, &b_pfoTargetPx);
-  fChain->SetBranchAddress("pfoTargetPy", &pfoTargetPy, &b_pfoTargetPy);
-  fChain->SetBranchAddress("pfoTargetPz", &pfoTargetPz, &b_pfoTargetPz);
-  fChain->SetBranchAddress("pfoTargetCosTheta", &pfoTargetCosTheta, &b_pfoTargetCosTheta);
-  fChain->SetBranchAddress("pfoPdgCodes", &pfoPdgCodes, &b_pfoPdgCodes);
-  fChain->SetBranchAddress("pfoTargetPdgCodes", &pfoTargetPdgCodes, &b_pfoTargetPdgCodes);
-  fChain->SetBranchAddress("nPfoTargetsTotal", &nPfoTargetsTotal, &b_nPfoTargetsTotal);
-  fChain->SetBranchAddress("nPfoTargetsNeutralHadrons", &nPfoTargetsNeutralHadrons, &b_nPfoTargetsNeutralHadrons);
-  fChain->SetBranchAddress("nPfoTargetsPhotons", &nPfoTargetsPhotons, &b_nPfoTargetsPhotons);
-  fChain->SetBranchAddress("nPfoTargetsTracks", &nPfoTargetsTracks, &b_nPfoTargetsTracks);
-  fChain->SetBranchAddress("pfoTargetsEnergyTotal", &pfoTargetsEnergyTotal, &b_pfoTargetsEnergyTotal);
-  fChain->SetBranchAddress("pfoTargetsEnergyNeutralHadrons", &pfoTargetsEnergyNeutralHadrons, &b_pfoTargetsEnergyNeutralHadrons);
-  fChain->SetBranchAddress("pfoTargetsEnergyPhotons", &pfoTargetsEnergyPhotons, &b_pfoTargetsEnergyPhotons);
-  fChain->SetBranchAddress("pfoTargetsEnergyTracks", &pfoTargetsEnergyTracks, &b_pfoTargetsEnergyTracks);
-  fChain->SetBranchAddress("mcEnergyENu", &mcEnergyENu, &b_mcEnergyENu);
-  fChain->SetBranchAddress("mcEnergyFwd", &mcEnergyFwd, &b_mcEnergyFwd);
-  fChain->SetBranchAddress("eQQ", &eQQ, &b_eQQ);
-  fChain->SetBranchAddress("eQ1", &eQ1, &b_eQ1);
-  fChain->SetBranchAddress("eQ2", &eQ2, &b_eQ2);
-  fChain->SetBranchAddress("costQQ", &costQQ, &b_costQQ);
-  fChain->SetBranchAddress("costQ1", &costQ1, &b_costQ1);
-  fChain->SetBranchAddress("costQ2", &costQ2, &b_costQ2);
-  fChain->SetBranchAddress("mQQ", &mQQ, &b_mQQ);
-  fChain->SetBranchAddress("thrust", &thrust, &b_thrust);
-  fChain->SetBranchAddress("qPdg", &qPdg, &b_qPdg);
-  Notify();
+   fChain->SetBranchAddress("evevt", &evevt, &b_evevt);
+   fChain->SetBranchAddress("evrun", &evrun, &b_evrun);
+   fChain->SetBranchAddress("evwgt", &evwgt, &b_evwgt);
+   fChain->SetBranchAddress("evtim", &evtim, &b_evtim);
+   fChain->SetBranchAddress("evsig", &evsig, &b_evsig);
+   fChain->SetBranchAddress("evene", &evene, &b_evene);
+   fChain->SetBranchAddress("evpoe", &evpoe, &b_evpoe);
+   fChain->SetBranchAddress("evpop", &evpop, &b_evpop);
+   fChain->SetBranchAddress("evnch", &evnch, &b_evnch);
+   fChain->SetBranchAddress("evpro", &evpro, &b_evpro);
+   fChain->SetBranchAddress("nmcp", &nmcp, &b_nmcp);
+   fChain->SetBranchAddress("mcori", mcori, &b_mcori);
+   fChain->SetBranchAddress("mcpdg", mcpdg, &b_mcpdg);
+   fChain->SetBranchAddress("mcgst", mcgst, &b_mcgst);
+   fChain->SetBranchAddress("mcsst", mcsst, &b_mcsst);
+   fChain->SetBranchAddress("mcvtx", mcvtx, &b_mcvtx);
+   fChain->SetBranchAddress("mcvty", mcvty, &b_mcvty);
+   fChain->SetBranchAddress("mcvtz", mcvtz, &b_mcvtz);
+   fChain->SetBranchAddress("mcepx", mcepx, &b_mcepx);
+   fChain->SetBranchAddress("mcepy", mcepy, &b_mcepy);
+   fChain->SetBranchAddress("mcepz", mcepz, &b_mcepz);
+   fChain->SetBranchAddress("mcmox", mcmox, &b_mcmox);
+   fChain->SetBranchAddress("mcmoy", mcmoy, &b_mcmoy);
+   fChain->SetBranchAddress("mcmoz", mcmoz, &b_mcmoz);
+   fChain->SetBranchAddress("mcmas", mcmas, &b_mcmas);
+   fChain->SetBranchAddress("mcene", mcene, &b_mcene);
+   fChain->SetBranchAddress("mccha", mccha, &b_mccha);
+   fChain->SetBranchAddress("mctim", mctim, &b_mctim);
+   fChain->SetBranchAddress("mcspx", mcspx, &b_mcspx);
+   fChain->SetBranchAddress("mcspy", mcspy, &b_mcspy);
+   fChain->SetBranchAddress("mcspz", mcspz, &b_mcspz);
+   fChain->SetBranchAddress("mccf0", mccf0, &b_mccf0);
+   fChain->SetBranchAddress("mccf1", mccf1, &b_mccf1);
+   fChain->SetBranchAddress("mcpa0", mcpa0, &b_mcpa0);
+   fChain->SetBranchAddress("mcpa1", mcpa1, &b_mcpa1);
+   fChain->SetBranchAddress("mcda0", mcda0, &b_mcda0);
+   fChain->SetBranchAddress("mcda1", mcda1, &b_mcda1);
+   fChain->SetBranchAddress("mcda2", mcda2, &b_mcda2);
+   fChain->SetBranchAddress("mcda3", mcda3, &b_mcda3);
+   fChain->SetBranchAddress("mcda4", mcda4, &b_mcda4);
+   fChain->SetBranchAddress("nrec", &nrec, &b_nrec);
+   fChain->SetBranchAddress("rcori", &rcori, &b_rcori);
+   fChain->SetBranchAddress("rccid", &rccid, &b_rccid);
+   fChain->SetBranchAddress("rctyp", &rctyp, &b_rctyp);
+   fChain->SetBranchAddress("rccov", &rccov, &b_rccov);
+   fChain->SetBranchAddress("rcrpx", &rcrpx, &b_rcrpx);
+   fChain->SetBranchAddress("rcrpy", &rcrpy, &b_rcrpy);
+   fChain->SetBranchAddress("rcrpz", &rcrpz, &b_rcrpz);
+   fChain->SetBranchAddress("rcgpi", &rcgpi, &b_rcgpi);
+   fChain->SetBranchAddress("rcpiu", &rcpiu, &b_rcpiu);
+   fChain->SetBranchAddress("rcnpi", &rcnpi, &b_rcnpi);
+   fChain->SetBranchAddress("rcfpi", &rcfpi, &b_rcfpi);
+   fChain->SetBranchAddress("rcmox", &rcmox, &b_rcmox);
+   fChain->SetBranchAddress("rcmoy", &rcmoy, &b_rcmoy);
+   fChain->SetBranchAddress("rcmoz", &rcmoz, &b_rcmoz);
+   fChain->SetBranchAddress("rcmas", &rcmas, &b_rcmas);
+   fChain->SetBranchAddress("rcene", &rcene, &b_rcene);
+   fChain->SetBranchAddress("rccha", &rccha, &b_rccha);
+   fChain->SetBranchAddress("rcntr", &rcntr, &b_rcntr);
+   fChain->SetBranchAddress("rcncl", &rcncl, &b_rcncl);
+   fChain->SetBranchAddress("rcnrp", &rcnrp, &b_rcnrp);
+   fChain->SetBranchAddress("rcftr", &rcftr, &b_rcftr);
+   fChain->SetBranchAddress("rcvts", &rcvts, &b_rcvts);
+   fChain->SetBranchAddress("rcvte", &rcvte, &b_rcvte);
+   fChain->SetBranchAddress("rccom", &rccom, &b_rccom);
+   fChain->SetBranchAddress("npid", &npid, &b_npid);
+   fChain->SetBranchAddress("pityp", &pityp, &b_pityp);
+   fChain->SetBranchAddress("pipdg", &pipdg, &b_pipdg);
+   fChain->SetBranchAddress("pillh", &pillh, &b_pillh);
+   fChain->SetBranchAddress("pialg", &pialg, &b_pialg);
+   fChain->SetBranchAddress("ntrk", &ntrk, &b_ntrk);
+   fChain->SetBranchAddress("trori", &trori, &b_trori);
+   fChain->SetBranchAddress("trtyp", &trtyp, &b_trtyp);
+   fChain->SetBranchAddress("trch2", &trch2, &b_trch2);
+   fChain->SetBranchAddress("trndf", &trndf, &b_trndf);
+   fChain->SetBranchAddress("tredx", &tredx, &b_tredx);
+   fChain->SetBranchAddress("trede", &trede, &b_trede);
+   fChain->SetBranchAddress("trrih", &trrih, &b_trrih);
+   fChain->SetBranchAddress("trshn", &trshn, &b_trshn);
+   fChain->SetBranchAddress("trnts", &trnts, &b_trnts);
+   fChain->SetBranchAddress("trfts", &trfts, &b_trfts);
+   fChain->SetBranchAddress("trsip", &trsip, &b_trsip);
+   fChain->SetBranchAddress("trsfh", &trsfh, &b_trsfh);
+   fChain->SetBranchAddress("trslh", &trslh, &b_trslh);
+   fChain->SetBranchAddress("trsca", &trsca, &b_trsca);
+   fChain->SetBranchAddress("ntrst", &ntrst, &b_ntrst);
+   fChain->SetBranchAddress("tsloc", &tsloc, &b_tsloc);
+   fChain->SetBranchAddress("tsdze", &tsdze, &b_tsdze);
+   fChain->SetBranchAddress("tsphi", &tsphi, &b_tsphi);
+   fChain->SetBranchAddress("tsome", &tsome, &b_tsome);
+   fChain->SetBranchAddress("tszze", &tszze, &b_tszze);
+   fChain->SetBranchAddress("tstnl", &tstnl, &b_tstnl);
+   fChain->SetBranchAddress("tscov", &tscov, &b_tscov);
+   fChain->SetBranchAddress("tsrpx", &tsrpx, &b_tsrpx);
+   fChain->SetBranchAddress("tsrpy", &tsrpy, &b_tsrpy);
+   fChain->SetBranchAddress("tsrpz", &tsrpz, &b_tsrpz);
+   fChain->SetBranchAddress("nsth", &nsth, &b_nsth);
+   fChain->SetBranchAddress("stori", stori, &b_stori);
+   fChain->SetBranchAddress("stci0", stci0, &b_stci0);
+   fChain->SetBranchAddress("stci1", stci1, &b_stci1);
+   fChain->SetBranchAddress("stpox", stpox, &b_stpox);
+   fChain->SetBranchAddress("stpoy", stpoy, &b_stpoy);
+   fChain->SetBranchAddress("stpoz", stpoz, &b_stpoz);
+   fChain->SetBranchAddress("stedp", stedp, &b_stedp);
+   fChain->SetBranchAddress("sttim", sttim, &b_sttim);
+   fChain->SetBranchAddress("stmox", stmox, &b_stmox);
+   fChain->SetBranchAddress("stmoy", stmoy, &b_stmoy);
+   fChain->SetBranchAddress("stmoz", stmoz, &b_stmoz);
+   fChain->SetBranchAddress("stptl", stptl, &b_stptl);
+   fChain->SetBranchAddress("stmcp", stmcp, &b_stmcp);
+   fChain->SetBranchAddress("nsch", &nsch, &b_nsch);
+   fChain->SetBranchAddress("scori", scori, &b_scori);
+   fChain->SetBranchAddress("scci0", scci0, &b_scci0);
+   fChain->SetBranchAddress("scci1", scci1, &b_scci1);
+   fChain->SetBranchAddress("scpox", scpox, &b_scpox);
+   fChain->SetBranchAddress("scpoy", scpoy, &b_scpoy);
+   fChain->SetBranchAddress("scpoz", scpoz, &b_scpoz);
+   fChain->SetBranchAddress("scene", scene, &b_scene);
+   fChain->SetBranchAddress("sctime", sctime, &b_sctime);
+   fChain->SetBranchAddress("r2mnrel", &r2mnrel, &b_r2mnrel);
+   fChain->SetBranchAddress("r2mf", &r2mf, &b_r2mf);
+   fChain->SetBranchAddress("r2mt", &r2mt, &b_r2mt);
+   fChain->SetBranchAddress("r2mw", &r2mw, &b_r2mw);
+   Notify();
 }
 
 Bool_t EcalSimHandler::Notify()
