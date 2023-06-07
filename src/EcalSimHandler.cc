@@ -25,6 +25,7 @@ void EcalSimHandler::Loop()
   int tothits = 0;
 
   TH3D *h3h;
+  TH3D *h3h1;
 
   // TH1D 
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
@@ -61,21 +62,29 @@ void EcalSimHandler::Loop()
         }      
       }
       */
-
+      
       if (jentry==10)
       {
-        h3h = new TH3D(TString::Format("h3h_%lld",jentry),"Hist in 3D",
-          100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
-          200,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
-          300,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
+        //   h3h=new TH3D(TString::Format("h3h_%lld",jentry),"Hist in 3D",
+        //   5,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
+        //   5,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
+        //   5,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
+
+        //   h3h1 = new TH3D(TString::Format("h3h1_%lld",jentry),"Hist in 3D",
+        //   100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
+        //   100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
+        //   100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
 
         // hists[jentry]=new TH3D(TString::Format("h3h_%d",jentry),"Hist in 3D",100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),200,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),300,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
-        h3h->SetTitle("Hist in 3D;X;Y;Z");
+        // h3h->SetTitle("Hist in 3D;X;Y;Z");
+        // h3h1->SetTitle("Hist in 3D;X;Y;Z");
 
         for (int ihit=0; ihit<nsch;ihit++)
         {
+          cout<<"hit "<<ihit<<" at time "<<sctime[ihit]<<endl;
           // h3h->Fill((Double_t)scpox[ihit],(Double_t)scpoy[ihit],(Double_t)scpoz[ihit]);
-          h3h->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+          // h3h->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+          // h3h1->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
           // cout << "hit: " << ihit << "\t x: " << scpox[ihit] << "\t y: " << scpoy[ihit] << "\t z: " << scpoz[ihit] << endl;
         }
       }
@@ -84,7 +93,8 @@ void EcalSimHandler::Loop()
 
   // MODIFY FROM HERE
   cout<<"\tTotal hits: "<<tothits<<endl;
-  h3h->Write();
+  // h3h->Write();
+  // h3h1->Write();
   storemyfile->Close();
 
   // TIL HERE
