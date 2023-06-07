@@ -7,5 +7,6 @@ data/
 *.root
 
 # cmake
+CMakeLists.txt
 build/
 *.sh
