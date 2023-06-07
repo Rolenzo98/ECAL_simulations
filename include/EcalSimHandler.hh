@@ -37,6 +37,11 @@ The information is used by the browser (see TBrowser).*/
 // Header file for the classes stored in the TTree if any.
 #include "vector"
 #include <numeric>
+#include <TMath.h>
+#include <TH3.h>
+
+#include <TString.h>
+#include <sstream>
 
 using std::vector;
 using std::cout;
@@ -396,18 +401,7 @@ void EcalSimHandler::Init(TTree *tree)
   // (once per file to be processed).
 
   // Set object pointer
-  pfoEnergies = 0;
-  pfoPx = 0;
-  pfoPy = 0;
-  pfoPz = 0;
-  pfoCosTheta = 0;
-  pfoTargetEnergies = 0;
-  pfoTargetPx = 0;
-  pfoTargetPy = 0;
-  pfoTargetPz = 0;
-  pfoTargetCosTheta = 0;
-  pfoPdgCodes = 0;
-  pfoTargetPdgCodes = 0;
+  // 
   // Set branch addresses and branch pointers
   if (!tree) return;
   fChain = tree;
