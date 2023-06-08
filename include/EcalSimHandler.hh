@@ -33,12 +33,13 @@ one can use the normal TTree functions to Draw,Scan,etc.*/
 The information is used by the browser (see TBrowser).*/
 #include <TSystem.h>
 #include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
 #include <numeric>
 #include <TMath.h>
-#include <TH3.h>
 
 #include <TString.h>
 #include <sstream>
