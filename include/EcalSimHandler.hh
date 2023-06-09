@@ -15,6 +15,11 @@ Then if it's not defined, it defines it and continues to the rest of the page.
 When the code is included again, the first ifndef fails, resulting in a blank file.
 That prevents double declaration of any identifiers such as types, enums and static variables.
 */
+#include <chrono>
+using namespace std::chrono;
+  auto start = high_resolution_clock::now();
+
+
 
 #include <iostream>
 // standard input-output stream
@@ -35,6 +40,7 @@ The information is used by the browser (see TBrowser).*/
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
+#include <TCanvas.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -47,6 +53,7 @@ The information is used by the browser (see TBrowser).*/
 using std::vector;
 using std::cout;
 using std::endl;
+
 
 // initialising a class called EcalSimHandler
 class EcalSimHandler {
