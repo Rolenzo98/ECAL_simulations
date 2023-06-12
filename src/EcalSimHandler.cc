@@ -31,6 +31,9 @@ void EcalSimHandler::Loop()
   double ebinlowedge[nbinlowedge];
 
   TH1F *h1htime;
+  TH1F *h1hx;
+  TH1F *h1hy;
+  TH1F *h1hz;
 
   TH2F *h2hxytime[nbin];
   TH2F *h2hyztime[nbin];
@@ -60,8 +63,8 @@ void EcalSimHandler::Loop()
     TString h3hpostime_name=TString::Format("h3hpostime_bin%d",i);
     TString h3hposenergy_name=TString::Format("h3hposenergy_bin%d",i);
 
-    h2hxytime[i]=new TH2F(h2hxytime_name,h2hxytime_name,100,-2000,2000,100,-1000,5000);
-    h2hyztime[i]=new TH2F(h2hyztime_name,h2hyztime_name,100,-1000,5000,100,-3000,3000);
+    h2hxytime[i]=new TH2F(h2hxytime_name,h2hxytime_name,100,-2000,2000,100,1800,3500);
+    h2hyztime[i]=new TH2F(h2hyztime_name,h2hyztime_name,100,1800,3500,100,-3000,3000);
     h2hxztime[i]=new TH2F(h2hxztime_name,h2hxztime_name,100,-2000,2000,100,-3000,3000);
 
     
@@ -75,8 +78,7 @@ void EcalSimHandler::Loop()
     100,-3000,3000);
   }
 
-
-  
+  double energyevent;
   for (Long64_t jentry =0; jentry<nentries; jentry++)
   {
     Long64_t ientry = LoadTree(jentry);
@@ -87,7 +89,7 @@ void EcalSimHandler::Loop()
     nbytes += nb;
     if (Cut(ientry) < 0)
       continue;
-
+energyevent=0;
     // MODIFY FROM HERe
       cout << "Event : " << jentry << "\tHits: " << nsch << "\tSize array: " << sizeof(scpox) / sizeof(Float_t) << endl;
       tothits+=nsch;
@@ -108,10 +110,14 @@ void EcalSimHandler::Loop()
         }      
       }
       */
-      
+       for (int ihit=0; ihit<nsch;ihit++)
+          {
+            // cout<<"energy of hit is "<<scene[ihit]<<endl;
+            energyevent+=scene[ihit];
+          }
+
       if (jentry==10)
       {
-
         h3hpos= new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
         100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
         100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
@@ -125,15 +131,17 @@ void EcalSimHandler::Loop()
         // h3hpostimeTOT->SetTitle("Hist in 3D;X;Y;Z");
         
 
-        int nbins=std::ceil((TMath::MaxElement(nsch,sctime)-TMath::MinElement(nsch,sctime))/binsize_h1htime);
-        h1htime = new TH1F(TString::Format("h1htime_%lld",jentry), 
-        "Hist 1D time of hits of event ", nbinsarr,  expvalarr);
-        h1htime->SetTitle("Hist 1D time of hits of event ;time (ns);counts");
+        // int nbins=std::ceil((TMath::MaxElement(nsch,sctime)-TMath::MinElement(nsch,sctime))/binsize_h1htime);
+        // h1htime = new TH1F(TString::Format("h1htime_%lld",jentry), 
+        // "Hist 1D time of hits of event ", nbinsarr,  expvalarr);
+        // h1htime->SetTitle("Hist 1D time of hits of event ;time (ns);counts");
 
        
 
         for (int ihit=0; ihit<nsch;ihit++)
         {
+          // h1hx->
+          h3hpos->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
           for (int i=0;i<nbin;i++)
           {
             if (sctime[ihit]>tbinlowedge[i]&&sctime[ihit]<tbinlowedge[i+1])
@@ -154,10 +162,12 @@ void EcalSimHandler::Loop()
           // cout << "hit: " << ihit << "\t x: " << scpox[ihit] << "\t y: " << scpoy[ihit] << "\t z: " << scpoz[ihit] << endl;
         }
         // break;
+        
       }
     // TIL HERE
+    // cout<<"energy of the event "<<jentry<<" is "<<energyevent*<<endl;
   }
-
+cout<<"energy of the event is "<<energyevent<<endl;
   // MODIFY FROM HERE
   cout<<"\tTotal hits: "<<tothits<<endl;
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
@@ -174,10 +184,12 @@ void EcalSimHandler::Loop()
 
     h2hxytime[i]->SetMarkerStyle(20);
     h2hxytime[i]->SetMarkerSize(0.5);
-    h2hxytime[i]->SetMarkerColor(i);;
-    h2hxytime[i]->Draw("SAME");    
+    // h2hxytime[i]->SetMarkerColor(i);;
+    h2hxytime[i]->Draw();    
+  c_2timexy->Print("~/Desktop/c_2timexy.gif+20");  
   }
-  c_2timexy->Write();
+  c_2timexy->Print("~/Desktop/c_2timexy.gif++");  
+
     
   TCanvas *c_2timeyz=new TCanvas("c_2timeyz","c_2timeyz",500,500);
   for (int i=0;i<nbin;i++)
@@ -188,10 +200,11 @@ void EcalSimHandler::Loop()
 
     h2hyztime[i]->SetMarkerStyle(20);
     h2hyztime[i]->SetMarkerSize(0.5);
-    h2hyztime[i]->SetMarkerColor(i);;
-    h2hyztime[i]->Draw("SAME");    
+    // h2hyztime[i]->SetMarkerColor(i);;
+    h2hyztime[i]->Draw();    
+  c_2timeyz->Print("~/Desktop/c_2timeyz.gif+20");
   }
-  c_2timeyz->Write();
+  c_2timeyz->Print("~/Desktop/c_2timeyz.gif++");
     
   TCanvas *c_2timexz=new TCanvas("c_2timexz","c_2timexz",500,500);
   for (int i=0;i<nbin;i++)
@@ -202,10 +215,11 @@ void EcalSimHandler::Loop()
 
     h2hxztime[i]->SetMarkerStyle(20);
     h2hxztime[i]->SetMarkerSize(0.5);
-    h2hxztime[i]->SetMarkerColor(i);;
-    h2hxztime[i]->Draw("SAME");    
+    // h2hxztime[i]->SetMarkerColor(i);
+    h2hxztime[i]->Draw();
+  c_2timexz->Print("~/Desktop/c_2timexz.gif+20");  
   }
-  c_2timexz->Write();
+  c_2timexz->Print("~/Desktop/c_2timexz.gif++");  
 
 
   TCanvas *c_time=new TCanvas("ctime","ctime",500,500);
@@ -266,7 +280,7 @@ void EcalSimHandler::Loop()
   // }
 
 
-  // h3hpos->Write();
+  h3hpos->Write();
   // h1htime->Write();
   storemyfile->Close();
 
