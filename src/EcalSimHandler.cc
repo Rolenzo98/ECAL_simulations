@@ -27,33 +27,49 @@ void EcalSimHandler::Loop()
 
   int nbin=24;
   int nbinlowedge=nbin+1;
-  double binlowedge[nbinlowedge];
+  double tbinlowedge[nbinlowedge];
+  double ebinlowedge[nbinlowedge];
 
   TH1F *h1htime;
 
-  TH2F *h2htime[nbin];
+  TH2F *h2hxytime[nbin];
+  TH2F *h2hyztime[nbin];
+  TH2F *h2hxztime[nbin];
   TH3D *h3hpostime[nbin];
+  TH3D *h3hposenergy[nbin];
 
   TH3D *h3hpos;
-  TH3D *h3hpostimeTOT;
+
 
   for (int i=0;i<nbinlowedge;i++)
   {
-    int ipow=i-10;
-    binlowedge[i]=std::pow(2,ipow);
-    cout<<"Bin "<<i<<" starts at time "<<binlowedge[i]<<endl;
+    int ipowt=i-10;
+    int ipowe=i-nbinlowedge;
+    tbinlowedge[i]=std::pow(2,ipowt);    
+    ebinlowedge[i]=std::pow(2,ipowe);
 
+    cout<<"Bin "<<i<<":\ttime: "<<tbinlowedge[i]<<"\tenergy: "<<ebinlowedge[i]<<endl;
   }
+
 
   for (int i=0;i<nbin;i++)
   {
-    TString h2htime_name=TString::Format("h2htime_bin%d",i);
+    TString h2hxytime_name=TString::Format("h2hxytime_bin%d",i);
+    TString h2hyztime_name=TString::Format("h2hyztime_bin%d",i);
+    TString h2hxztime_name=TString::Format("h2hxztime_bin%d",i);
     TString h3hpostime_name=TString::Format("h3hpostime_bin%d",i);
+    TString h3hposenergy_name=TString::Format("h3hposenergy_bin%d",i);
 
-    h2htime[i]=new TH2F(h2htime_name,h2htime_name,100,-500,500,100,-0,3000);
+    h2hxytime[i]=new TH2F(h2hxytime_name,h2hxytime_name,100,-2000,2000,100,-1000,5000);
+    h2hyztime[i]=new TH2F(h2hyztime_name,h2hyztime_name,100,-1000,5000,100,-3000,3000);
+    h2hxztime[i]=new TH2F(h2hxztime_name,h2hxztime_name,100,-2000,2000,100,-3000,3000);
 
     
     h3hpostime[i]= new TH3D(h3hpostime_name,h3hpostime_name,
+    100,-2000,2000,
+    100,-1000,5000,
+    100,-3000,3000);    
+    h3hposenergy[i]= new TH3D(h3hposenergy_name,h3hposenergy_name,
     100,-2000,2000,
     100,-1000,5000,
     100,-3000,3000);
@@ -96,11 +112,11 @@ void EcalSimHandler::Loop()
       if (jentry==10)
       {
 
-        // h3hpos= new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
-        // 100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
-        // 100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
-        // 100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
-        // h3hpos->SetTitle("Hist in 3D;X;Y;Z");        
+        h3hpos= new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
+        100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
+        100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
+        100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
+        h3hpos->SetTitle("Hist in 3D;X;Y;Z");        
         
         // h3hpostimeTOT= new TH3D(TString::Format("h3hpostimeTOT_%lld",jentry),"Hist in 3D",
         // 100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
@@ -109,25 +125,28 @@ void EcalSimHandler::Loop()
         // h3hpostimeTOT->SetTitle("Hist in 3D;X;Y;Z");
         
 
-        // int nbins=std::ceil((TMath::MaxElement(nsch,sctime)-TMath::MinElement(nsch,sctime))/binsize_h1htime);
-        // h1htime = new TH1F(TString::Format("h1htime_%lld",jentry), 
-        // "Hist 1D time of hits of event ", nbinsarr,  expvalarr);
-        // h1htime->SetTitle("Hist 1D time of hits of event ;time (ns);counts");
+        int nbins=std::ceil((TMath::MaxElement(nsch,sctime)-TMath::MinElement(nsch,sctime))/binsize_h1htime);
+        h1htime = new TH1F(TString::Format("h1htime_%lld",jentry), 
+        "Hist 1D time of hits of event ", nbinsarr,  expvalarr);
+        h1htime->SetTitle("Hist 1D time of hits of event ;time (ns);counts");
 
        
 
         for (int ihit=0; ihit<nsch;ihit++)
         {
-          // cout<<"hit "<<ihit<<" at time "<<sctime[ihit]<<endl;
-          // h3hpos->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
-          // h1htime->Fill(sctime[ihit]);
-
           for (int i=0;i<nbin;i++)
           {
-            if (sctime[ihit]>binlowedge[i]&&sctime[ihit]<binlowedge[i+1])
+            if (sctime[ihit]>tbinlowedge[i]&&sctime[ihit]<tbinlowedge[i+1])
             {
-              h2htime[i]->Fill(scpox[ihit],scpoy[ihit]);
+              h2hxytime[i]->Fill(scpox[ihit],scpoy[ihit]);
+              h2hyztime[i]->Fill(scpoy[ihit],scpoz[ihit]);
+              h2hxztime[i]->Fill(scpox[ihit],scpoz[ihit]);
               h3hpostime[i]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+              break;
+            }
+            if (scene[ihit]>ebinlowedge[i]&&scene[ihit]<ebinlowedge[i+1])
+            {
+              h3hposenergy[i]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
               break;
             }
           }
@@ -143,53 +162,109 @@ void EcalSimHandler::Loop()
   cout<<"\tTotal hits: "<<tothits<<endl;
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
 
+  TCanvas *c_2timexy=new TCanvas("c_2timexy","c_2timexy",500,500);
 
-  TCanvas *c1=new TCanvas("c1","c1",500,500);
-  // h3hpostime[16]->SetMarkerStyle(20);
-  // h3hpostime[11]->SetMarkerStyle(20);
-  // h3hpostime[12]->SetMarkerStyle(20);
-  // h3hpostime[16]->SetMarkerSize(2);
-  // h3hpostime[11]->SetMarkerSize(2);
-  // h3hpostime[12]->SetMarkerSize(2);
-  //     h3hpostime[16]->SetMarkerColor(kRed);
-  //   h3hpostime[11]->SetMarkerColor(kBlue);
-  //   h3hpostime[12]->SetMarkerColor(kGreen);
-
-    // h3hpostime[13]->SetMarkerColor();
-    // h3hpostime[14]->SetMarkerColor(5);
-    // h3hpostime[15]->SetMarkerColor(6);
-
-    // h3hpostime[16]->Draw(" SAME");
-    // h3hpostime[11]->Draw(" SAME");
-    // h3hpostime[12]->Draw(" SAME");
-    // h3hpostime[13]->Draw("BOX SAME");
-    // h3hpostime[14]->Draw("BOX SAME");
-    // h3hpostime[15]->Draw("BOX  SAME");
   for (int i=0;i<nbin;i++)
   {
+    if (h2hxytime[i]->GetEntries()==0)
+    {
+      continue;
+    }
+    h2hxytime[i]->SetTitle(TString::Format("h2hxytime_bin%d_(%f-%f);X;Y",i,tbinlowedge[i],tbinlowedge[i+1]));
+
+    h2hxytime[i]->SetMarkerStyle(20);
+    h2hxytime[i]->SetMarkerSize(0.5);
+    h2hxytime[i]->SetMarkerColor(i);;
+    h2hxytime[i]->Draw("SAME");    
+  }
+  c_2timexy->Write();
+    
+  TCanvas *c_2timeyz=new TCanvas("c_2timeyz","c_2timeyz",500,500);
+  for (int i=0;i<nbin;i++)
+  {
+    if (h2hyztime[i]->GetEntries()==0)
+      continue;
+    h2hyztime[i]->SetTitle(TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+
+    h2hyztime[i]->SetMarkerStyle(20);
+    h2hyztime[i]->SetMarkerSize(0.5);
+    h2hyztime[i]->SetMarkerColor(i);;
+    h2hyztime[i]->Draw("SAME");    
+  }
+  c_2timeyz->Write();
+    
+  TCanvas *c_2timexz=new TCanvas("c_2timexz","c_2timexz",500,500);
+  for (int i=0;i<nbin;i++)
+  {
+    if (h2hxztime[i]->GetEntries()==0)
+      continue;
+    h2hxztime[i]->SetTitle(TString::Format("h2hxztime%d_(%f-%f);X;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+
+    h2hxztime[i]->SetMarkerStyle(20);
+    h2hxztime[i]->SetMarkerSize(0.5);
+    h2hxztime[i]->SetMarkerColor(i);;
+    h2hxztime[i]->Draw("SAME");    
+  }
+  c_2timexz->Write();
+
+
+  TCanvas *c_time=new TCanvas("ctime","ctime",500,500);
+  for (int i=0;i<nbin;i++)
+  {
+    h3hpostime[i]->SetTitle(TString::Format("h3hpostime_bin%d_(%f-%f);X;Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+
     h3hpostime[i]->SetMarkerStyle(20);
-    h3hpostime[11]->SetMarkerSize(0.2);
+    h3hpostime[i]->SetMarkerSize(0.5);
     h3hpostime[i]->SetMarkerColor(i);;
-    h3hpostime[i]->Draw("SAME");
+    h3hpostime[i]->Draw("BOX SAME");    
   }
-  c1->Write();
+  c_time->Write();
 
-
+  TCanvas *c_energy=new TCanvas("cenergy","cenergy",500,500);
   for (int i=0;i<nbin;i++)
   {
-    h2htime[i]->SetTitle(TString::Format("h2htime_bin%d_(%f-%f)",i,binlowedge[i],binlowedge[i+1]));
-    h2htime[i]->Write();
+    h3hposenergy[i]->SetTitle(TString::Format("h3hposenergy_bin%d_(%f-%f)",i,ebinlowedge[i],ebinlowedge[i+1])+";X;Y;Z");
 
+    h3hposenergy[i]->SetMarkerStyle(20);
+    h3hposenergy[i]->SetMarkerSize(0.5);
+    h3hposenergy[i]->SetMarkerColor(i);;
+    h3hposenergy[i]->Draw("BOX SAME");  
   }
+  c_energy->Write();
+
+//   for (int i=0;i<nbin;i++)
+//   {
+//     h2hxytime[i]->SetTitle(TString::Format("h2hxytime_bin%d_(%f-%f);X;Y",i,tbinlowedge[i],tbinlowedge[i+1]));
+//     h2hxytime[i]->Write();
+//   }
+
+//   for (int i=0;i<nbin;i++)
+//   {
+//     h2hyztime[i]->SetTitle(TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+//     h2hyztime[i]->Write();
+//   }
+
+// for (int i=0;i<nbin;i++)
+//   {
+//     h2hxztime[i]->SetTitle(TString::Format("h2hxztime_bin%d_(%f-%f);X;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+//     h2hxztime[i]->Write();
+//   }
   
-    //   h3hpostime[16]->SetMarkerColor(kRed);
+    // h3hpostime[16]->SetMarkerColor(kRed);
     // h3hpostime[11]->SetMarkerColor(kBlue);
     // h3hpostime[12]->SetMarkerColor(kGreen);
   for (int i=0;i<nbin;i++)
   {
-    h3hpostime[i]->SetTitle(TString::Format("h3hpostime_bin%d_(%f-%f)",i,binlowedge[i],binlowedge[i+1]));
     h3hpostime[i]->Write();
-  }
+  }  
+  
+  // for (int i=0;i<nbin;i++)
+  // {
+  //   // h3hposenergy[i]->SetTitle(TString::Format("h3hposenergy_bin%d_(%f-%f);X;Y;Z",i,ebinlowedge[i],ebinlowedge[i+1]));
+  //   // h3hposenergy[i]->SetTitle(TString::Format("h3hposenergy_bin;X;Y;Z"));
+  //   h3hposenergy[i]->Write();
+  // }
+
 
   // h3hpos->Write();
   // h1htime->Write();
