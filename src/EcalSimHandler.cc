@@ -12,49 +12,46 @@ void EcalSimHandler::Loop()
     return;
 
   Long64_t nentries = fChain->GetEntriesFast();
-
-  // MODIFY FROM HERE
-
-  // TH3F * hist = new TH3F("hist","hist",100,-2000,2000,100,1000,5000,100,-2000,2000);
-
-  // TIL HERE
-
   Long64_t nbytes = 0, nb = 0;
 
-  // Event Loop
-  int tothits = 0;
-  float binsize_h1htime=0.001;
 
+  int tothits = 0;
+  // float binsize_h1htime=0.001;
+
+  // Declaring the number of binning for the time and energy division
   int nbin=24;
   int nbinlowedge=nbin+1;
   double tbinlowedge[nbinlowedge];
   double ebinlowedge[nbinlowedge];
+  double pippo[10]={0.0001,0.001,0.01,0.1,1,10,100,1000,10000,100000};
 
+  // Declaring histograms
+  // declaration histograms 1D
   TH1F *h1htime;
+  TH1F *h1henergy;
   TH1F *h1hx;
   TH1F *h1hy;
   TH1F *h1hz;
-
+  // declaration histograms 2D
   TH2F *h2hxytime[nbin];
   TH2F *h2hyztime[nbin];
   TH2F *h2hxztime[nbin];
+  // declaration histograms 3D
+  TH3D *h3hpos;
   TH3D *h3hpostime[nbin];
   TH3D *h3hposenergy[nbin];
 
-  TH3D *h3hpos;
-
-
+  // Creating the binning for the time and energy division
   for (int i=0;i<nbinlowedge;i++)
   {
     int ipowt=i-10;
     int ipowe=i-nbinlowedge;
     tbinlowedge[i]=std::pow(2,ipowt);    
     ebinlowedge[i]=std::pow(2,ipowe);
-
     cout<<"Bin "<<i<<":\ttime: "<<tbinlowedge[i]<<"\tenergy: "<<ebinlowedge[i]<<endl;
   }
 
-
+  // Setting the names of the histograms and initializing them
   for (int i=0;i<nbin;i++)
   {
     TString h2hxytime_name=TString::Format("h2hxytime_bin%d",i);
@@ -78,7 +75,9 @@ void EcalSimHandler::Loop()
     100,-3000,3000);
   }
 
+  // Main
   double energyevent;
+  // Loop over the events
   for (Long64_t jentry =0; jentry<nentries; jentry++)
   {
     Long64_t ientry = LoadTree(jentry);
@@ -89,10 +88,10 @@ void EcalSimHandler::Loop()
     nbytes += nb;
     if (Cut(ientry) < 0)
       continue;
-energyevent=0;
-    // MODIFY FROM HERe
-      cout << "Event : " << jentry << "\tHits: " << nsch << "\tSize array: " << sizeof(scpox) / sizeof(Float_t) << endl;
-      tothits+=nsch;
+
+    energyevent=0;
+    // cout << "Event : " << jentry << "\tHits: " << nsch << "\tSize array: " << sizeof(scpox) / sizeof(Float_t) << endl;
+    tothits+=nsch;
 
       /*
       // even if the number of hits is less than the size of the array, the remaining
@@ -110,123 +109,127 @@ energyevent=0;
         }      
       }
       */
-       for (int ihit=0; ihit<nsch;ihit++)
-          {
-            // cout<<"energy of hit is "<<scene[ihit]<<endl;
-            energyevent+=scene[ihit];
-          }
-
-      if (jentry==10)
+    for (int ihit=0; ihit<nsch;ihit++)
       {
-        h3hpos= new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
-        100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
-        100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
-        100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
-        h3hpos->SetTitle("Hist in 3D;X;Y;Z");        
-        
-        // h3hpostimeTOT= new TH3D(TString::Format("h3hpostimeTOT_%lld",jentry),"Hist in 3D",
-        // 100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
-        // 100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
-        // 100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
-        // h3hpostimeTOT->SetTitle("Hist in 3D;X;Y;Z");
-        
-
-        // int nbins=std::ceil((TMath::MaxElement(nsch,sctime)-TMath::MinElement(nsch,sctime))/binsize_h1htime);
-        // h1htime = new TH1F(TString::Format("h1htime_%lld",jentry), 
-        // "Hist 1D time of hits of event ", nbinsarr,  expvalarr);
-        // h1htime->SetTitle("Hist 1D time of hits of event ;time (ns);counts");
-
-       
-
-        for (int ihit=0; ihit<nsch;ihit++)
-        {
-          // h1hx->
-          h3hpos->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
-          for (int i=0;i<nbin;i++)
-          {
-            if (sctime[ihit]>tbinlowedge[i]&&sctime[ihit]<tbinlowedge[i+1])
-            {
-              h2hxytime[i]->Fill(scpox[ihit],scpoy[ihit]);
-              h2hyztime[i]->Fill(scpoy[ihit],scpoz[ihit]);
-              h2hxztime[i]->Fill(scpox[ihit],scpoz[ihit]);
-              h3hpostime[i]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
-              break;
-            }
-            if (scene[ihit]>ebinlowedge[i]&&scene[ihit]<ebinlowedge[i+1])
-            {
-              h3hposenergy[i]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
-              break;
-            }
-          }
-
-          // cout << "hit: " << ihit << "\t x: " << scpox[ihit] << "\t y: " << scpoy[ihit] << "\t z: " << scpoz[ihit] << endl;
-        }
-        // break;
-        
+        // cout<<"energy of hit is "<<scene[ihit]<<endl;
+        energyevent+=scene[ihit];
       }
-    // TIL HERE
-    // cout<<"energy of the event "<<jentry<<" is "<<energyevent*<<endl;
-  }
-cout<<"energy of the event is "<<energyevent<<endl;
-  // MODIFY FROM HERE
-  cout<<"\tTotal hits: "<<tothits<<endl;
+    // Selecting a specific event
+    if (jentry==10)
+    {
+      // Initializing the histogram for the position of the hits in 3D      
+      h3hpos=new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
+      100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
+      100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
+      100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
+      // cout<<"min element in sctime "<<TMath::MinElement(nbinlowedge, tbinlowedge)<<endl;
+      // cout<<"max element in sctime "<<TMath::MaxElement(nbinlowedge, tbinlowedge)<<endl;
+      h1htime=new TH1F(TString::Format("h1htime_%lld",jentry), 
+      TString::Format("h1htime_%lld; time (ns); counts",jentry),
+      nbin, tbinlowedge);
+
+      h1henergy=new TH1F(TString::Format("h1henergy_%lld",jentry),
+      TString::Format("h1henergy_%lld; energy (keV); counts",jentry),
+      nbin, ebinlowedge);
+
+      // Loop over the hits of the event
+      for (int ihit=0; ihit<nsch;ihit++)
+      {
+        cout<< "hit: " << ihit << "\t time : " << sctime[ihit] << "\t energy: " << scene[ihit] << endl;
+        h3hpos->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+        // Loop over all the bins for the time and energy     
+        // if (ihit == 582){
+        //   cout << "bad hit sctime "<< sctime[ihit] << endl;
+        // }
+        // if (ihit == 588){
+        //   cout << "good hit sctime "<< sctime[ihit] << endl;
+        // }
+
+
+
+        for (int i=0;i<nbin;i++)
+        {
+          // Control and fill the histograms in the time bins          
+          if (sctime[ihit]>tbinlowedge[i]&&sctime[ihit]<tbinlowedge[i+1])
+          {
+            h1htime->Fill(sctime[ihit]);
+            h2hxytime[i]->Fill(scpox[ihit],scpoy[ihit]);
+            h2hyztime[i]->Fill(scpoy[ihit],scpoz[ihit]);
+            h2hxztime[i]->Fill(scpox[ihit],scpoz[ihit]);
+            h3hpostime[i]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+            // break; // condition to exit the loop to make it faster
+          }
+          
+          // Control and fill the histograms in the energy bins
+          if (scene[ihit]>ebinlowedge[i]&&scene[ihit]<ebinlowedge[i+1])
+          {
+            h1henergy->Fill(scene[ihit]);
+            h3hposenergy[i]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+            // break;
+          }
+        } // end loop over the bins
+
+        // cout << "hit: " << ihit << "\t x: " << scpox[ihit] << "\t y: " << scpoy[ihit] << "\t z: " << scpoz[ihit] << endl;
+      } // end loop over the hits of the event
+      // break;
+      
+    } // end if for the specific event
+
+
+  } // end loop over the events
+
+  // cout<<"energy of the event is "<<energyevent<<endl;
+  // cout<<"\tTotal hits: "<<tothits<<endl;
+  // gSystem->Exec("rm gif/*.gif");
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
 
   TCanvas *c_2timexy=new TCanvas("c_2timexy","c_2timexy",500,500);
-
   for (int i=0;i<nbin;i++)
   {
-    if (h2hxytime[i]->GetEntries()==0)
-    {
-      continue;
-    }
+    // if (h2hxytime[i]->GetEntries()==0)
+    //   continue;
     h2hxytime[i]->SetTitle(TString::Format("h2hxytime_bin%d_(%f-%f);X;Y",i,tbinlowedge[i],tbinlowedge[i+1]));
-
     h2hxytime[i]->SetMarkerStyle(20);
     h2hxytime[i]->SetMarkerSize(0.5);
     // h2hxytime[i]->SetMarkerColor(i);;
     h2hxytime[i]->Draw();    
-  c_2timexy->Print("~/Desktop/c_2timexy.gif+20");  
+    c_2timexy->Print("gif/c_2timexy.gif+20");  
   }
-  c_2timexy->Print("~/Desktop/c_2timexy.gif++");  
+  c_2timexy->Print("gif/c_2timexy.gif++");  
 
-    
   TCanvas *c_2timeyz=new TCanvas("c_2timeyz","c_2timeyz",500,500);
   for (int i=0;i<nbin;i++)
   {
-    if (h2hyztime[i]->GetEntries()==0)
-      continue;
+    // if (h2hyztime[i]->GetEntries()==0)
+    //   continue;
     h2hyztime[i]->SetTitle(TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
-
     h2hyztime[i]->SetMarkerStyle(20);
     h2hyztime[i]->SetMarkerSize(0.5);
     // h2hyztime[i]->SetMarkerColor(i);;
     h2hyztime[i]->Draw();    
-  c_2timeyz->Print("~/Desktop/c_2timeyz.gif+20");
+    c_2timeyz->Print("gif/c_2timeyz.gif+20");
   }
-  c_2timeyz->Print("~/Desktop/c_2timeyz.gif++");
+  c_2timeyz->Print("gif/c_2timeyz.gif++");
     
   TCanvas *c_2timexz=new TCanvas("c_2timexz","c_2timexz",500,500);
   for (int i=0;i<nbin;i++)
   {
-    if (h2hxztime[i]->GetEntries()==0)
-      continue;
+    // if (h2hxztime[i]->GetEntries()==0)
+    //   continue;
     h2hxztime[i]->SetTitle(TString::Format("h2hxztime%d_(%f-%f);X;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
-
     h2hxztime[i]->SetMarkerStyle(20);
     h2hxztime[i]->SetMarkerSize(0.5);
     // h2hxztime[i]->SetMarkerColor(i);
     h2hxztime[i]->Draw();
-  c_2timexz->Print("~/Desktop/c_2timexz.gif+20");  
+    c_2timexz->Print("gif/c_2timexz.gif+20");  
   }
-  c_2timexz->Print("~/Desktop/c_2timexz.gif++");  
+  c_2timexz->Print("gif/c_2timexz.gif++");  
 
 
   TCanvas *c_time=new TCanvas("ctime","ctime",500,500);
   for (int i=0;i<nbin;i++)
   {
     h3hpostime[i]->SetTitle(TString::Format("h3hpostime_bin%d_(%f-%f);X;Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
-
     h3hpostime[i]->SetMarkerStyle(20);
     h3hpostime[i]->SetMarkerSize(0.5);
     h3hpostime[i]->SetMarkerColor(i);;
@@ -238,7 +241,6 @@ cout<<"energy of the event is "<<energyevent<<endl;
   for (int i=0;i<nbin;i++)
   {
     h3hposenergy[i]->SetTitle(TString::Format("h3hposenergy_bin%d_(%f-%f)",i,ebinlowedge[i],ebinlowedge[i+1])+";X;Y;Z");
-
     h3hposenergy[i]->SetMarkerStyle(20);
     h3hposenergy[i]->SetMarkerSize(0.5);
     h3hposenergy[i]->SetMarkerColor(i);;
@@ -281,12 +283,12 @@ cout<<"energy of the event is "<<energyevent<<endl;
 
 
   h3hpos->Write();
-  // h1htime->Write();
+  h1htime->Write();
+  h1henergy->Write();
   storemyfile->Close();
 
-  // TIL HERE
+
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
   cout << "Time taken by program: "<< duration.count() << " microseconds" << endl;
-
 }
