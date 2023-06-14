@@ -41,6 +41,10 @@ The information is used by the browser (see TBrowser).*/
 #include <TH2.h>
 #include <TH3.h>
 #include <TCanvas.h>
+#include <TLine.h>
+#include <filesystem>
+// #include <fstream>
+// #include <cstdio>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -53,6 +57,7 @@ The information is used by the browser (see TBrowser).*/
 using std::vector;
 using std::cout;
 using std::endl;
+// using std::filesystem;
 
 
 // initialising a class called EcalSimHandler
