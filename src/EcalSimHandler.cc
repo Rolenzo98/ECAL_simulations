@@ -25,6 +25,11 @@ void EcalSimHandler::Loop()
   double ebinlowedge[nbinlowedge];
   double pippo[10]={0.0001,0.001,0.01,0.1,1,10,100,1000,10000,100000};
 
+  //declaring lines for the histogram
+  TLine *myline1;
+  TLine *myline2;
+  TLine *myline3;
+
   // Declaring histograms
   // declaration histograms 1D
   TH1F *h1htime;
@@ -48,7 +53,7 @@ void EcalSimHandler::Loop()
     int ipowe=i-nbinlowedge;
     tbinlowedge[i]=std::pow(2,ipowt);    
     ebinlowedge[i]=std::pow(2,ipowe);
-    cout<<"Bin "<<i<<":\ttime: "<<tbinlowedge[i]<<"\tenergy: "<<ebinlowedge[i]<<endl;
+    // cout<<"Bin "<<i<<":\ttime: "<<tbinlowedge[i]<<"\tenergy: "<<ebinlowedge[i]<<endl;
   }
 
   // Setting the names of the histograms and initializing them
@@ -90,7 +95,7 @@ void EcalSimHandler::Loop()
       continue;
 
     energyevent=0;
-    // cout << "Event : " << jentry << "\tHits: " << nsch << "\tSize array: " << sizeof(scpox) / sizeof(Float_t) << endl;
+    // cout << "Event : " <<jentry << "\tHits: " << nsch << "\tSize array: " << sizeof(scpox) / sizeof(Float_t) << endl;
     tothits+=nsch;
 
       /*
@@ -114,9 +119,11 @@ void EcalSimHandler::Loop()
         // cout<<"energy of hit is "<<scene[ihit]<<endl;
         energyevent+=scene[ihit];
       }
+    
     // Selecting a specific event
     if (jentry==10)
     {
+      cout<<"Event "<<jentry<<"analysis:\n"<<"Hit\tTime\t\tEnergy\tPosition"<<endl;
       // Initializing the histogram for the position of the hits in 3D      
       h3hpos=new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
       100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
@@ -135,18 +142,11 @@ void EcalSimHandler::Loop()
       // Loop over the hits of the event
       for (int ihit=0; ihit<nsch;ihit++)
       {
-        cout<< "hit: " << ihit << "\t time : " << sctime[ihit] << "\t energy: " << scene[ihit] << endl;
+        cout<<ihit<<"\t"<<sctime[ihit]<<"\t\t"<<scene[ihit]<<"\tx "<<scpox[ihit]<<" y "<<scpoy[ihit]<<" z "<<scpoz[ihit]<<endl;
+        // cout<< "hit: " << ihit << "\t time : " << sctime[ihit] << "\t energy: " << scene[ihit] << endl;
         h3hpos->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+        
         // Loop over all the bins for the time and energy     
-        // if (ihit == 582){
-        //   cout << "bad hit sctime "<< sctime[ihit] << endl;
-        // }
-        // if (ihit == 588){
-        //   cout << "good hit sctime "<< sctime[ihit] << endl;
-        // }
-
-
-
         for (int i=0;i<nbin;i++)
         {
           // Control and fill the histograms in the time bins          
@@ -168,19 +168,32 @@ void EcalSimHandler::Loop()
             // break;
           }
         } // end loop over the bins
-
-        // cout << "hit: " << ihit << "\t x: " << scpox[ihit] << "\t y: " << scpoy[ihit] << "\t z: " << scpoz[ihit] << endl;
       } // end loop over the hits of the event
       // break;
-      
     } // end if for the specific event
-
-
   } // end loop over the events
 
   // cout<<"energy of the event is "<<energyevent<<endl;
-  // cout<<"\tTotal hits: "<<tothits<<endl;
-  // gSystem->Exec("rm gif/*.gif");
+  cout<<"\nTotal hits: "<<tothits<<"\nTotal energy: "<<energyevent<<endl<<endl;
+  if (std::filesystem::exists("gif"))
+  {
+    cout<<"THE folder exists"<<endl;
+    if (std::filesystem::is_empty("gif"))
+    {
+      cout<<"THEY don't exist, crete them"<<endl;
+    }
+    else 
+    {
+      cout<<"THEY exist, remove them and recreate"<<endl;
+      gSystem->Exec("rm gif/*.gif");
+    }
+  }
+  else 
+  {
+    cout<<"THE folder don't exist, create gif folder and create them"<<endl;
+    std::filesystem::create_directory("gif");
+  }
+
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
 
   TCanvas *c_2timexy=new TCanvas("c_2timexy","c_2timexy",500,500);
@@ -205,7 +218,13 @@ void EcalSimHandler::Loop()
     h2hyztime[i]->SetTitle(TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
     h2hyztime[i]->SetMarkerStyle(20);
     h2hyztime[i]->SetMarkerSize(0.5);
-    // h2hyztime[i]->SetMarkerColor(i);;
+    // h2hyztime[i]->SetMarkerColor(i);
+    myline1=new TLine(1808,0, 1808, 3000);
+    myline2=new TLine(2028,0, 2028, 3000);
+    myline3=new TLine(34400,0, 34400, 3000);
+    myline1->Draw("same");
+    myline2->Draw("same");
+    myline3->Draw("same");
     h2hyztime[i]->Draw();    
     c_2timeyz->Print("gif/c_2timeyz.gif+20");
   }
@@ -248,23 +267,23 @@ void EcalSimHandler::Loop()
   }
   c_energy->Write();
 
-//   for (int i=0;i<nbin;i++)
-//   {
-//     h2hxytime[i]->SetTitle(TString::Format("h2hxytime_bin%d_(%f-%f);X;Y",i,tbinlowedge[i],tbinlowedge[i+1]));
-//     h2hxytime[i]->Write();
-//   }
+  //   for (int i=0;i<nbin;i++)
+  //   {
+  //     h2hxytime[i]->SetTitle(TString::Format("h2hxytime_bin%d_(%f-%f);X;Y",i,tbinlowedge[i],tbinlowedge[i+1]));
+  //     h2hxytime[i]->Write();
+  //   }
 
-//   for (int i=0;i<nbin;i++)
-//   {
-//     h2hyztime[i]->SetTitle(TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
-//     h2hyztime[i]->Write();
-//   }
+  //   for (int i=0;i<nbin;i++)
+  //   {
+  //     h2hyztime[i]->SetTitle(TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+  //     h2hyztime[i]->Write();
+  //   }
 
-// for (int i=0;i<nbin;i++)
-//   {
-//     h2hxztime[i]->SetTitle(TString::Format("h2hxztime_bin%d_(%f-%f);X;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
-//     h2hxztime[i]->Write();
-//   }
+  // for (int i=0;i<nbin;i++)
+  //   {
+  //     h2hxztime[i]->SetTitle(TString::Format("h2hxztime_bin%d_(%f-%f);X;Z",i,tbinlowedge[i],tbinlowedge[i+1]));
+  //     h2hxztime[i]->Write();
+  //   }
   
     // h3hpostime[16]->SetMarkerColor(kRed);
     // h3hpostime[11]->SetMarkerColor(kBlue);
@@ -290,5 +309,8 @@ void EcalSimHandler::Loop()
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
+  gSystem->Exec("root -l myfileh3h.root");
   cout << "Time taken by program: "<< duration.count() << " microseconds" << endl;
-}
+  
+} // end of main function
+  // gSystem->Exec("root myfileh3h.root");
