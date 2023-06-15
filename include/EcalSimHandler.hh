@@ -42,6 +42,8 @@ The information is used by the browser (see TBrowser).*/
 #include <TH3.h>
 #include <TCanvas.h>
 #include <TLine.h>
+#include <TLatex.h>
+#include <TStyle.h>
 #include <filesystem>
 // #include <fstream>
 // #include <cstdio>
