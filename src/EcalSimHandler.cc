@@ -199,6 +199,24 @@ void EcalSimHandler::Loop()
       TString::Format("h1henergy_%lld; energy (keV); counts",jentry),
       nbin, ebinlowedge);
 
+      // for (int ibin=0; ibin<nbin; ibin++)
+      // {
+      //   for (int ihit=0; ihit<nsch;ihit++)
+      //   {
+      //     if (sctime[ihit]>tbinlowedge[ibin]&&sctime[ihit]<tbinlowedge[ibin+1])
+      //     {
+      //       h3hpostime[ibin]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+      //       continue;
+      //     }
+      //   }
+      //   h3hpostime[ibin]->Draw();
+      //   delete h3hpostime[ibin];
+      //   c_3time_gif->Print("gif/c_3time_gif.gif+20"); 
+      // }
+      // c_3time_gif->Print("gif/c_3time_gif.gif++");
+      
+      
+      
       // Loop over the hits of the event (1*665=665 times)
       for (int ihit=0; ihit<nsch;ihit++)
       {
@@ -257,11 +275,14 @@ void EcalSimHandler::Loop()
 
 
 
-
-
-
-
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
+
+  TDirectory *dir = storemyfile->mkdir("h3hpos");
+  dir->cd();
+  h3hpos->Write();
+  storemyfile->cd();
+
+
 
   // Gif of the 2D plots of the time vs x and y 
   TCanvas *c_2timexy_gif=new TCanvas("c_2timexy_gif","c_2timexy_gif",500,500);
@@ -416,7 +437,7 @@ void EcalSimHandler::Loop()
   // }
 
   // write all the remaining histograms
-  h3hpos->Write();
+  // h3hpos->Write();
   h1htime->Write();
   h1henergy->Write();
 
