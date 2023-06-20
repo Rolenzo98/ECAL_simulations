@@ -50,21 +50,21 @@ void EcalSimHandler::Loop()
 
   // Declaring histograms, lines, etc.
   // declaration histograms 1D
-  TH1F *h1htime;
-  TH1F *h1henergy;
-  TH1F *h1hx;
-  TH1F *h1hy;
-  TH1F *h1hz;
+  TH1F *h1htime; //histogram of the hits time
+  TH1F *h1henergy; //histogram of the hits energy
+  TH1F *h1hx; //histogram of the hits in the x plane
+  TH1F *h1hy; //histogram of the hits in the y plane
+  TH1F *h1hz; //histogram of the hits in the z plane
   // declaration histograms 2D
-  TH2F *h2hxytime[nbin];
-  TH2F *h2hyztime[nbin];
-  TH2F *h2hxztime[nbin];
+  TH2F *h2hxytime[nbin]; //projection of the hits in the xy plane
+  TH2F *h2hyztime[nbin]; //projection of the hits in the yz plane
+  TH2F *h2hxztime[nbin]; //projection of the hits in the xz plane
   // declaration histograms 3D
-  TH3D *h3hpos;
-  TH3D *h3hpostime[nbin];
-  TH3D *h3hposenergy[nbin];
+  TH3D *h3hpos; //cumulative histogram all hits
+  TH3D *h3hpostime[nbin]; //histogram all hits in bin time
+  TH3D *h3hposenergy[nbin]; //histogram all hits in bin energy
   //declaring lines for the histogram
-  TLine *myline1;
+  TLine *myline1; 
   TLine *myline2;
   TLine *myline3;
   TLine *myline4;
@@ -76,7 +76,6 @@ void EcalSimHandler::Loop()
     int ipowe=i-nbinlowedge;
     tbinlowedge[i]=std::pow(2,ipowt);    
     ebinlowedge[i]=std::pow(2,ipowe);
-    // cout<<"Bin "<<i<<":\ttime: "<<tbinlowedge[i]<<"\tenergy: "<<ebinlowedge[i]<<endl;
   }
 
   // // Setting the names of the histograms and initializing them
@@ -95,16 +94,22 @@ void EcalSimHandler::Loop()
     h2hxztime[i]=new TH2F(h2hxztime_name,h2hxztime_name,
       100,h_xmin,h_xmax,100,h_zmin,h_zmax);
 
-    h3hpostime[i]= new TH3D(h3hpostime_name,h3hpostime_name,
-      100,-2000,2000,
-      100,-1000,5000,
-      100,-3000,3000);    
-    h3hposenergy[i]= new TH3D(h3hposenergy_name,h3hposenergy_name,
-      100,-2000,2000,
-      100,-1000,5000,
-      100,-3000,3000);
+    // h3hpostime[i]= new TH3D(h3hpostime_name,h3hpostime_name,
+    //   100,-2000,2000,
+    //   100,-1000,5000,
+    //   100,-3000,3000);    
+    // h3hposenergy[i]= new TH3D(h3hposenergy_name,h3hposenergy_name,
+    //   100,-2000,2000,
+    //   100,-1000,5000,
+    //   100,-3000,3000);
   }
 
+
+  TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
+  TDirectory *dir_h1 = storemyfile->mkdir("h1");
+  TDirectory *dir_h2 = storemyfile->mkdir("h2");
+  TDirectory *dir_h3 = storemyfile->mkdir("h3");
+  TCanvas *c_3time_gif=new TCanvas("c_3time_gif","c_3time_gif",500,500);
 
 
   // MAIN` LOOP - Loop over the events (100 times)
@@ -120,17 +125,17 @@ void EcalSimHandler::Loop()
       continue;
 
     energyevent=0;
-    // cout << "Event : " <<jentry << "\tHits: " << nsch << "\tSize array: " << sizeof(scpox) / sizeof(Float_t) << endl;
     tothits+=nsch;
 
-
-    // h_xmin3D=TMath::MinElement(nsch, scpox);
-    // h_xmax3D=TMath::MaxElement(nsch, scpox);
-    // h_ymin3D=TMath::MinElement(nsch, scpoy);
-    // h_ymax3D=TMath::MaxElement(nsch, scpoy);
-    // h_zmin3D=TMath::MinElement(nsch, scpoz);
-    // h_zmax3D=TMath::MaxElement(nsch, scpoz);
-
+    
+    h_xmin3D=TMath::MinElement(nsch, scpox);
+    h_xmax3D=TMath::MaxElement(nsch, scpox);
+    h_ymin3D=TMath::MinElement(nsch, scpoy);
+    h_ymax3D=TMath::MaxElement(nsch, scpoy);
+    h_zmin3D=TMath::MinElement(nsch, scpoz);
+    h_zmax3D=TMath::MaxElement(nsch, scpoz);
+    
+    /*
     // for (int i=0;i<nbin;i++)
     // {
     //   TString h2hxytime_name=TString::Format("h2hxytime_bin%d",i);
@@ -155,9 +160,7 @@ void EcalSimHandler::Loop()
     //     100,h_ymin3D,h_ymax3D,
     //     100,h_zmin3D,h_zmax3D);
     // }
-
-
-
+    */
     /*
     // even if the number of hits is less than the size of the array, the remaining
     // entries are filled with numbers, thus the minimum (or max) o the values of the 
@@ -174,50 +177,68 @@ void EcalSimHandler::Loop()
       }      
     }
     */
+    /*
     for (int ihit=0; ihit<nsch;ihit++)
       {
         // cout<<"energy of hit is "<<scene[ihit]<<endl;
         energyevent+=scene[ihit];
       }
+    */
     
     // Selecting a specific event (back to 1 time)
+    // EVENTUALLY THIS CONDITION WILL BE REMOVED
     if (jentry==10)
     {
       cout<<"Event "<<jentry<<"analysis:\n"<<"Hit\tTime\t\tEnergy\tPosition"<<endl;
-      // Initializing the histogram for the position of the hits in 3D      
+      // Initializing the histogram for the position of the hits in 3D (valid all events, all single ones)  
       h3hpos=new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D",
       100,TMath::MinElement(nsch, scpox),TMath::MaxElement(nsch, scpox),
       100,TMath::MinElement(nsch, scpoy),TMath::MaxElement(nsch, scpoy),
       100,TMath::MinElement(nsch, scpoz),TMath::MaxElement(nsch, scpoz));
-      // cout<<"min element in sctime "<<TMath::MinElement(nbinlowedge, tbinlowedge)<<endl;
-      // cout<<"max element in sctime "<<TMath::MaxElement(nbinlowedge, tbinlowedge)<<endl;
+      //h3hpos->SetDirectory(dir_h3);
+      // Initializing the histogram for the time of the hits in 1D (valid all events, all single ones)
       h1htime=new TH1F(TString::Format("h1htime_%lld",jentry), 
       TString::Format("h1htime_%lld; time (ns); counts",jentry),
       nbin, tbinlowedge);
-
+      //h1htime->SetDirectory(dir_h1);
+      // Initializing the histogram for the energy of the hits in 1D (valid all events, all single ones)
       h1henergy=new TH1F(TString::Format("h1henergy_%lld",jentry),
       TString::Format("h1henergy_%lld; energy (keV); counts",jentry),
       nbin, ebinlowedge);
+      //h1henergy->SetDirectory(dir_h1);
 
-      // for (int ibin=0; ibin<nbin; ibin++)
-      // {
-      //   for (int ihit=0; ihit<nsch;ihit++)
-      //   {
-      //     if (sctime[ihit]>tbinlowedge[ibin]&&sctime[ihit]<tbinlowedge[ibin+1])
-      //     {
-      //       h3hpostime[ibin]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
-      //       continue;
-      //     }
-      //   }
-      //   h3hpostime[ibin]->Draw();
-      //   delete h3hpostime[ibin];
-      //   c_3time_gif->Print("gif/c_3time_gif.gif+20"); 
-      // }
-      // c_3time_gif->Print("gif/c_3time_gif.gif++");
+      for (int ibin=0; ibin<nbin; ibin++)
+      {
+        h3hpostime[ibin]= new TH3D(h3hpostime_name,h3hpostime_name,
+          100,h_xmin3D,h_xmax3D,
+          100,h_ymin3D,h_ymax3D,
+          100,h_zmin3D,h_zmax3D);  
+        for (int ihit=0; ihit<nsch;ihit++)
+        {
+          if (sctime[ihit]>tbinlowedge[ibin]&&sctime[ihit]<tbinlowedge[ibin+1])
+          {
+            h1htime->Fill(sctime[ihit]);
+            h2hxytime[ihit]->Fill(scpox[ihit],scpoy[ihit]);
+            h2hyztime[ihit]->Fill(scpoy[ihit],scpoz[ihit]);
+            h2hxztime[ihit]->Fill(scpox[ihit],scpoz[ihit]);
+            h3hpostime[ibin]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
+            continue;
+          }
+        }
+        h3hpostime[ibin]->SetDirectory(dir_h3);
+        h3hpostime[ibin]->Write();
+        c_3time_gif->cd();
+        h3hpostime[ibin]->Draw();
+        delete h3hpostime[ibin];
+        c_3time_gif->Print("gif/c_3time_gif.gif+20"); 
+      }
+      c_3time_gif->Print("gif/c_3time_gif.gif++");
       
       
       
       // Loop over the hits of the event (1*665=665 times)
+      // for (int ihit=0; ihit<nsch;ihit++)
+
       for (int ihit=0; ihit<nsch;ihit++)
       {
         cout<<ihit<<"\t"<<sctime[ihit]<<"\t\t"<<scene[ihit]<<"\tx "<<scpox[ihit]<<" y "<<scpoy[ihit]<<" z "<<scpoz[ihit]<<endl;
@@ -225,6 +246,7 @@ void EcalSimHandler::Loop()
         h3hpos->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
         
         // Loop over all the bins for the time and energy (1*665*24=15960 times)  
+        // for (int i=0;i<nbin;i++)
         for (int i=0;i<nbin;i++)
         { 
           // Control and fill the histograms in the time bins          
@@ -272,15 +294,6 @@ void EcalSimHandler::Loop()
     std::filesystem::create_directory("gif");
   }
 
-
-
-
-  TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
-
-  TDirectory *dir = storemyfile->mkdir("h3hpos");
-  dir->cd();
-  h3hpos->Write();
-  storemyfile->cd();
 
 
 
