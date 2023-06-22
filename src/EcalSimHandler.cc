@@ -105,29 +105,38 @@ void EcalSimHandler::Loop()
   TDirectory *dir_h2_yz = dir_h2->mkdir("yz");
   TDirectory *dir_h2_xz = dir_h2->mkdir("xz"); 
  
-  if (std::filesystem::exists("gif"))
-  {
-    cout<<"The folder gif exists"<<endl;
-    if (std::filesystem::is_empty("gif"))
+
+
+
+    if (std::filesystem::exists("gif"))
     {
-      cout<<"The folder gif is empty, the program is going to create gifs"<<endl;
+      cout<<"The folder gif exists"<<endl;
+      // if (std::filesystem::is_empty("gif"))
+      // {
+      //   cout<<"The folder gif is empty, the program is going to create gifs"<<endl;
+      // }
+      // else 
+      // {
+      //   cout<<"The folder contains already some gifs, the program is going to remove them and recreate them"<<endl;
+      //   gSystem->Exec("rm gif/*.gif");
+      // }
     }
     else 
     {
-      cout<<"The folder contains already some gifs, the program is going to remove them and recreate them"<<endl;
-      gSystem->Exec("rm gif/*.gif");
-    }
-  }
-  else 
-  {
-    cout<<"The folder gif doesn't exist, the program is going to create the folder and to fill it with the gif"<<endl;
-    std::filesystem::create_directory("gif");
-  }
+      cout<<"The folder gif doesn't exist, the program is going to create the folder and to fill it with the gif"<<endl;
+      std::filesystem::create_directory("gif");
+      std::filesystem::create_directory("gif/2xy");
+      std::filesystem::create_directory("gif/2yz");
+      std::filesystem::create_directory("gif/2xz");
+      std::filesystem::create_directory("gif/3");
+      
 
+    }
 
   // MAIN` LOOP - Loop over the events (100 times)
   for (Long64_t jentry =0; jentry<nentries; jentry++)
   {
+    auto startevent = high_resolution_clock::now();
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0)
       break;
@@ -140,14 +149,22 @@ void EcalSimHandler::Loop()
     // energyevent=0;
     tothits+=nsch;
 
+    TString::Format("h1htime_%d",jentry);
+    TCanvas *c_2timexy_gif=new TCanvas(TString::Format("c%lld_2timexy_gif",jentry),TString::Format("c%lld_2timexy_gif",jentry),500,500);
+    TCanvas *c_2timeyz_gif=new TCanvas(TString::Format("c%lld_2timeyz_gif",jentry),TString::Format("c%lld_2timeyz_gif",jentry),500,500);
+    TCanvas *c_2timexz_gif=new TCanvas(TString::Format("c%lld_2timexz_gif",jentry),TString::Format("c%lld_2timexz_gif",jentry),500,500);
+    TCanvas *c_3time_gif=new TCanvas(TString::Format("c%lld_3time_gif",jentry),TString::Format("c%lld_3time_gif",jentry),500,500);
+    TCanvas *c_3energy_gif=new TCanvas(TString::Format("c%lld_3energy_gif",jentry),TString::Format("c%lld_3energy_gif",jentry),500,500);
 
-    TCanvas *c_2timexy_gif=new TCanvas("c_2timexy_gif","c_2timexy_gif",500,500);
-    TCanvas *c_2timeyz_gif=new TCanvas("c_2timeyz_gif","c_2timeyz_gif",500,500);
-    TCanvas *c_2timexz_gif=new TCanvas("c_2timexz_gif","c_2timexz_gif",500,500);
-    TCanvas *c_3time_gif=new TCanvas("c_3time_gif","c_3time_gif",500,500); 
+    // TCanvas *c_2timeyz_gif=new TCanvas("c_2timeyz_gif","c_2timeyz_gif",500,500);
+    // TCanvas *c_2timexz_gif=new TCanvas("c_2timexz_gif","c_2timexz_gif",500,500);
+    // TCanvas *c_3time_gif=new TCanvas("c_3time_gif","c_3time_gif",500,500); 
 
-    TCanvas *c_3time=new TCanvas("c_3time","c_3time",500,500);
-    TCanvas *c_3energy=new TCanvas("c_3energy","c_3energy",500,500);
+    TCanvas *c_3time=new TCanvas(TString::Format("c%lld_3time",jentry),TString::Format("c%d_3time",jentry),500,500);
+
+    
+    TCanvas *c_3energy=new TCanvas(TString::Format("c%lld_3energy",jentry),TString::Format("c%d_3energy",jentry),500,500);
+
 
     
     /*
@@ -202,8 +219,11 @@ void EcalSimHandler::Loop()
     
     // Selecting a specific event (back to 1 time)
     // EVENTUALLY THIS CONDITION WILL BE REMOVED
-    if (jentry==10)
-    {
+      cout<<"Event: "<<jentry<<" Hits: "<<nsch;
+
+    // if (jentry==58)
+    // {
+      // cout<<"Event "<<jentry<<"analysis:\n"<<"Hit\tTime\t\tEnergy\tPosition"<<endl;
           
       h_xmin3D=TMath::MinElement(nsch, scpox);
       h_xmax3D=TMath::MaxElement(nsch, scpox);
@@ -212,7 +232,6 @@ void EcalSimHandler::Loop()
       h_zmin3D=TMath::MinElement(nsch, scpoz);
       h_zmax3D=TMath::MaxElement(nsch, scpoz);
       
-      cout<<"Event "<<jentry<<"analysis:\n"<<"Hit\tTime\t\tEnergy\tPosition"<<endl;
       
       // Initializing the histogram for the position of the hits in 3D (valid all events, all single ones)  
       h3hpos=new TH3D(TString::Format("h3hpos_%lld",jentry),"Hist in 3D", 
@@ -235,18 +254,18 @@ void EcalSimHandler::Loop()
 
       for (int ibin=0; ibin<nbin; ibin++)
       {
-        TString h2hxytime_name=TString::Format("h2hxytime_bin%d",ibin);
-        TString h2hxytime_title=TString::Format("h2hxytime_bin%d_(%f-%f);X;Y",ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
-        TString h2hyztime_name=TString::Format("h2hyztime_bin%d",ibin);
-        TString h2hyztime_title=TString::Format("h2hyztime_bin%d_(%f-%f);Y;Z",ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
-        TString h2hxztime_name=TString::Format("h2hxztime_bin%d",ibin);
-        TString h2hxztime_title=TString::Format("h2hxztime_bin%d_(%f-%f);X;Z",ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
+        TString h2hxytime_name=TString::Format("Event_%lld_h2hxytime_bin%d",jentry,ibin);
+        TString h2hxytime_title=TString::Format("Event_%lld_xy_bin%d_(%f-%f);X;Y",jentry,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
+        TString h2hyztime_name=TString::Format("Event_%lld_h2hyztime_bin%d",jentry,ibin);
+        TString h2hyztime_title=TString::Format("Event_%lld_yz_bin%d_(%f-%f);Y;Z",jentry,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
+        TString h2hxztime_name=TString::Format("Event_%lld_h2hxztime_bin%d",jentry,ibin);
+        TString h2hxztime_title=TString::Format("Event_%lld_xz_bin%d_(%f-%f);X;Z",jentry,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
 
-        TString h3hpostime_name=TString::Format("h3hpostime_bin%d",ibin);
-        TString h3hpostime_title=TString::Format("h3hpostime_bin%d_(%f-%f);X;Y;Z",ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
+        TString h3hpostime_name=TString::Format("Event_%lld_h3hpostime_bin%d",jentry,ibin);
+        TString h3hpostime_title=TString::Format("Event_%lld_time_bin%d_(%f-%f);X;Y;Z",jentry,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]);
         
-        TString h3hposenergy_name=TString::Format("h3hposenergy_bin%d",ibin);
-        TString h3hposenergy_title=TString::Format("h3hposenergy_bin%d_(%f-%f);X;Y;Z",ibin,ebinlowedge[ibin],ebinlowedge[ibin+1]);
+        TString h3hposenergy_name=TString::Format("Event_%lld_h3hposenergy_bin%d",jentry,ibin);
+        TString h3hposenergy_title=TString::Format("Event_%lld_energy_bin%d_(%f-%f);X;Y;Z",jentry,ibin,ebinlowedge[ibin],ebinlowedge[ibin+1]);
 
         h3hpostime[ibin]= new TH3D(h3hpostime_name,h3hpostime_title,
           100,h_xmin3D,h_xmax3D,
@@ -295,18 +314,18 @@ void EcalSimHandler::Loop()
 
         // gStyle->SetOptStat(0);
 
-        dir_h2_xy->cd();
-        h2hxytime[ibin]->Write();
-        dir_h2_yz->cd();
-        h2hyztime[ibin]->Write();
-        dir_h2_xz->cd();
-        h2hxztime[ibin]->Write();
+        // dir_h2_xy->cd();
+        // h2hxytime[ibin]->Write();
+        // dir_h2_yz->cd();
+        // h2hyztime[ibin]->Write();
+        // dir_h2_xz->cd();
+        // h2hxztime[ibin]->Write();
 
-        dir_h3->cd();
-        h3hpostime[ibin]->Write();
+        // dir_h3->cd();
+        // h3hpostime[ibin]->Write();
         c_3time_gif->cd();
         h3hpostime[ibin]->Draw();
-        c_3time_gif->Print("gif/c_3time_gif.gif+20"); 
+        c_3time_gif->Print(TString::Format("gif/3/c%lld_3time_gif.gif+20",jentry)); 
 
 
         h2hxytime[ibin]->SetMarkerStyle(20);
@@ -337,12 +356,12 @@ void EcalSimHandler::Loop()
         myline2->Draw("same");
         myline3->Draw("same");
         myline4->Draw("same");
-        c_2timexy_gif->Print("gif/c_2timexy_gif.gif+20");  
-        delete h2hxytime[ibin];
+        c_2timexy_gif->Print(TString::Format("gif/2xy/c%lld_2timexy_gif.gif+20",jentry));  
         delete myline1;
         delete myline2;
         delete myline3;
         delete myline4;
+        delete h2hxytime[ibin];
 
         c_2timeyz_gif->cd();
         h2hyztime[ibin]->Draw();
@@ -354,34 +373,37 @@ void EcalSimHandler::Loop()
         myline2->Draw("same");
         myline3->Draw("same");
         myline4->Draw("same");
-        c_2timeyz_gif->Print("gif/c_2timeyz_gif.gif+20");
-        delete h2hyztime[ibin];
+        c_2timeyz_gif->Print(TString::Format("gif/2yz/c%lld_2timeyz_gif.gif+20",jentry));
         delete myline1;
         delete myline2;
         delete myline3;
         delete myline4;
+        delete h2hyztime[ibin];
 
         c_2timexz_gif->cd();
         h2hxztime[ibin]->Draw();
-        c_2timexz_gif->Print("gif/c_2timexz_gif.gif+20");  
+        c_2timexz_gif->Print(TString::Format("gif/2xz/c%lld_2timexz_gif.gif+20",jentry));  
         delete h2hxztime[ibin];
 
         c_3time->cd();
         h3hpostime[ibin]->Draw("SAME");   
-        // delete h3hpostime[ibin];
 
 
         c_3energy->cd();
         h3hposenergy[ibin]->Draw(" SAME");
-        // delete h3hposenergy[ibin];
       }
       
-      c_2timexy_gif->Print("gif/c_2timexy_gif.gif++");
-      c_2timeyz_gif->Print("gif/c_2timeyz_gif.gif++");
-      c_2timexz_gif->Print("gif/c_2timexz_gif.gif++");
-      c_3time_gif->Print("gif/c_3time_gif.gif++");
+      c_2timexy_gif->Print(TString::Format("gif/2xy/c%lld_2timexy_gif.gif++", jentry));
+      c_2timeyz_gif->Print(TString::Format("gif/2yz/c%lld_2timeyz_gif.gif++", jentry));
+      c_2timexz_gif->Print(TString::Format("gif/2xz/c%lld_2timexz_gif.gif++", jentry));
+      c_3time_gif->Print(TString::Format("gif/3/c%lld_3time_gif.gif++", jentry));
       c_3time->Write();
       c_3energy->Write();     
+      for (int ibin=0;ibin<nbin;ibin++)
+      {
+      delete h3hpostime[ibin];
+      delete h3hposenergy[ibin];
+      }
 
       dir_h1->cd();
       h1htime->Write();
@@ -395,13 +417,24 @@ void EcalSimHandler::Loop()
       delete h3hpos;
       
 
-    } // end if for the specific event
+    // } // end if for the specific event
     delete c_2timexy_gif;
     delete c_2timeyz_gif;
     delete c_2timexz_gif;
     delete c_3time_gif;
     delete c_3time;
     delete c_3energy;
+    
+
+    auto stopevent = high_resolution_clock::now(); 
+    auto durationevent = duration_cast <milliseconds>(stopevent - startevent);
+    auto duration = duration_cast <seconds>(stopevent - start);
+    cout << "\tdone it: "<< durationevent.count() << " ms\t" << 
+    "Time total ("<<jentry<<"/"<<nentries<<"): "<< duration.count() << " s" << 
+    // "\testimated time: "<<(duration/jentry)*(nentries-jentry)<<
+    endl;
+
+
 
   } // end loop over the events
 
@@ -412,9 +445,9 @@ void EcalSimHandler::Loop()
   gSystem->Exec("root -l myfileh3h.root"); // execute the root file
   
   // time check
-  auto stop = high_resolution_clock::now(); 
-  auto duration = duration_cast<microseconds>(stop - start);
-  cout << "Time taken by program: "<< duration.count() << " microseconds" << endl;
+  auto stop= high_resolution_clock::now(); 
+  auto duration = duration_cast<seconds>(stop - start);
+  cout << "Time taken by program: "<< duration.count() << " seconds" << endl;
   
 } // end of main function
 
