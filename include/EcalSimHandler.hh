@@ -45,6 +45,7 @@ The information is used by the browser (see TBrowser).*/
 #include <TLatex.h>
 #include <TStyle.h>
 #include <filesystem>
+#include <TColor.h>
 // #include <fstream>
 // #include <cstdio>
 
