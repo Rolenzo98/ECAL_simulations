@@ -118,20 +118,18 @@ void EcalSimHandler::Loop()
       // else 
       // {
       //   cout<<"The folder contains already some gifs, the program is going to remove them and recreate them"<<endl;
-      //   gSystem->Exec("rm gif/*.gif");
+        gSystem->Exec("rm -r gif/*");;
       // }
     }
     else 
     {
       cout<<"The folder gif doesn't exist, the program is going to create the folder and to fill it with the gif"<<endl;
+    }
       std::filesystem::create_directory("gif");
       std::filesystem::create_directory("gif/2xy");
       std::filesystem::create_directory("gif/2yz");
       std::filesystem::create_directory("gif/2xz");
       std::filesystem::create_directory("gif/3");
-      
-
-    }
 
   // MAIN` LOOP - Loop over the events (100 times)
   for (Long64_t jentry =0; jentry<nentries; jentry++)
@@ -302,7 +300,7 @@ void EcalSimHandler::Loop()
             h2hyztime[ibin]->Fill(scpoy[ihit],scpoz[ihit]);
             h2hxztime[ibin]->Fill(scpox[ihit],scpoz[ihit]);
             h3hpostime[ibin]->Fill(scpox[ihit],scpoy[ihit],scpoz[ihit]);
-            // continue;
+            continue;
           }
           if (scene[ihit]>ebinlowedge[ibin]&&scene[ihit]<ebinlowedge[ibin+1])
           {
@@ -429,10 +427,15 @@ void EcalSimHandler::Loop()
     auto stopevent = high_resolution_clock::now(); 
     auto durationevent = duration_cast <milliseconds>(stopevent - startevent);
     auto duration = duration_cast <seconds>(stopevent - start);
-    cout << "\tdone it: "<< durationevent.count() << " ms\t" << 
-    "Time total ("<<jentry<<"/"<<nentries<<"): "<< duration.count() << " s" << 
-    // "\testimated time: "<<(duration/jentry)*(nentries-jentry)<<
-    endl;
+    // long int duration_int=static_cast<long int>(duration);
+    // long int jentry_int=static_cast<long int>(jentry);
+    // long int nentries_int=nentries;
+    // int cacca=jentry+1;
+    // auto pippo=duration.count()/(cacca)*(nentries-jentry);
+    
+    cout << "\tdone it: "<< durationevent.count() << " ms" << 
+    "\tTime total ("<<jentry<<"/"<<nentries<<"): "<< duration.count() << " s" << 
+    "\tEstimated remaining time: "<<(duration.count()/(jentry+1))*(nentries-jentry-1)<<" s"<<endl;
 
 
 
