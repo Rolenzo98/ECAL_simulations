@@ -148,19 +148,19 @@ void EcalSimHandler::Loop()
     // energyevent=0;
     tothits+=nsch;
 
-    TCanvas *c_2timexy_gif=new TCanvas(TString::Format("c%lld_2timexy_gif",jentry),TString::Format("c%lld_2timexy_gif",jentry),500,500);
-    TCanvas *c_2timeyz_gif=new TCanvas(TString::Format("c%lld_2timeyz_gif",jentry),TString::Format("c%lld_2timeyz_gif",jentry),500,500);
-    TCanvas *c_2timexz_gif=new TCanvas(TString::Format("c%lld_2timexz_gif",jentry),TString::Format("c%lld_2timexz_gif",jentry),500,500);
-    TCanvas *c_3time_gif=new TCanvas(TString::Format("c%lld_3time_gif",jentry),TString::Format("c%lld_3time_gif",jentry),1000,1000);
-    TCanvas *c_3time=new TCanvas(TString::Format("c%lld_3time",jentry),TString::Format("c%lld_3time",jentry),500,500);
-    TCanvas *c_3energy=new TCanvas(TString::Format("c%lld_3energy",jentry),TString::Format("c%lld_3energy",jentry),500,500);
+    TCanvas *c_2timexy_gif=new TCanvas(TString::Format("eve%lld_2timexy_gif",jentry),TString::Format("c%lld_2timexy_gif",jentry),500,500);
+    TCanvas *c_2timeyz_gif=new TCanvas(TString::Format("eve%lld_2timeyz_gif",jentry),TString::Format("c%lld_2timeyz_gif",jentry),500,500);
+    TCanvas *c_2timexz_gif=new TCanvas(TString::Format("eve%lld_2timexz_gif",jentry),TString::Format("c%lld_2timexz_gif",jentry),500,500);
+    TCanvas *c_3time_gif=new TCanvas(TString::Format("eve%lld_3time_gif",jentry),TString::Format("c%lld_3time_gif",jentry),1000,1000);
+    TCanvas *c_3time=new TCanvas(TString::Format("eve%lld_3time",jentry),TString::Format("c%lld_3time",jentry),500,500);
+    TCanvas *c_3energy=new TCanvas(TString::Format("eve%lld_3energy",jentry),TString::Format("c%lld_3energy",jentry),500,500);
 
 
 
       cout<<jentry<<"/"<<nentries<<"\t"<<nsch;
 
-    if (jentry==58)
-    {
+    // if (jentry==58)
+    // {
 
           
       h_xmin3D=TMath::MinElement(nsch, scpox);
@@ -255,95 +255,81 @@ void EcalSimHandler::Loop()
             
         }
         gStyle->SetPalette(kRainBow);
-
-
         // gStyle->SetOptStat(0);
 
         dir_h2_xy->cd();
-        h2hxytime[ibin]->Write();
+          h2hxytime[ibin]->Write();
+          c_2timexy_gif->cd();
+          h2hxytime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
+          h2hxytime[ibin]->Draw();    
+          myline1=new TLine(h_xmin, h_yECALmin, h_xmax, h_yECALmin);
+          myline2=new TLine(h_xmin, h_yHCALmax, h_xmax, h_yHCALmax);
+          myline3=new TLine(h_xmin, h_yHCALmin, h_xmax, h_yHCALmin);
+          myline4=new TLine(h_xmin, h_yECALmax, h_xmax, h_yECALmax);
+          myline1->Draw("same");
+          myline2->Draw("same");
+          myline3->Draw("same");
+          myline4->Draw("same");
+          c_2timexy_gif->Print(TString::Format("gif/2xy/c%lld_2timexy_gif.gif+50",jentry));  
+          delete myline1;
+          delete myline2;
+          delete myline3;
+          delete myline4;
+          delete h2hxytime[ibin];
+
         dir_h2_yz->cd();
-        h2hyztime[ibin]->Write();
+          h2hyztime[ibin]->Write();
+          c_2timeyz_gif->cd();
+          h2hyztime[ibin]->SetMarkerStyle(20);
+          h2hyztime[ibin]->SetMarkerSize(0.5);
+          h2hyztime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
+          h2hyztime[ibin]->Draw();
+          myline1=new TLine(h_yECALmin,h_zmin, h_yECALmin, h_zmax);
+          myline2=new TLine(h_yHCALmax,h_zmin, h_yHCALmax, h_zmax);
+          myline3=new TLine(h_yHCALmin,h_zmin, h_yHCALmin, h_zmax);
+          myline4=new TLine(h_yECALmax,h_zmin, h_yECALmax, h_zmax);
+          myline1->Draw("same");
+          myline2->Draw("same");
+          myline3->Draw("same");
+          myline4->Draw("same");
+          c_2timeyz_gif->Print(TString::Format("gif/2yz/c%lld_2timeyz_gif.gif+20",jentry));
+          delete myline1;
+          delete myline2;
+          delete myline3;
+          delete myline4;
+          delete h2hyztime[ibin];
+
         dir_h2_xz->cd();
-        h2hxztime[ibin]->Write();
+          h2hxztime[ibin]->Write();
+          h2hxztime[ibin]->SetMarkerStyle(20);
+          h2hxztime[ibin]->SetMarkerSize(0.5);
+          c_2timexz_gif->cd();
+          h2hxztime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
+          h2hxztime[ibin]->Draw();
+          c_2timexz_gif->Print(TString::Format("gif/2xz/c%lld_2timexz_gif.gif+20",jentry));  
+          delete h2hxztime[ibin];
 
         dir_h3->cd();
-        h3hpostime[ibin]->Write();
-        
+          h3hpostime[ibin]->Write(); 
         canvases->cd();
-        c_3time_gif->cd();
-        h3hpostime[ibin]->SetMarkerStyle(20);
-        h3hpostime[ibin]->SetMarkerSize(0.7);
-        h3hpostime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
-        h3hpostime[ibin]->Draw();
-        c_3time_gif->Print(TString::Format("gif/3/c%lld_3time_gif.gif+100",jentry)); 
-
-
-        h2hxytime[ibin]->SetMarkerStyle(20);
-        h2hxytime[ibin]->SetMarkerSize(0.5);
-        h2hyztime[ibin]->SetMarkerStyle(20);
-        h2hyztime[ibin]->SetMarkerSize(0.5);
-        h2hxztime[ibin]->SetMarkerStyle(20);
-        h2hxztime[ibin]->SetMarkerSize(0.5);
-        
-        h3hpostime[ibin]->SetMarkerStyle(20);
-        h3hpostime[ibin]->SetMarkerSize(0.5);
-        h3hposenergy[ibin]->SetMarkerStyle(20);
-        h3hposenergy[ibin]->SetMarkerSize(0.7);
-        h3hposenergy[ibin]->SetMarkerColor(ibin);
-
-
-
-
-
-        c_2timexy_gif->cd();
-        h2hxytime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
-        h2hxytime[ibin]->Draw();    
-        myline1=new TLine(h_xmin, h_yECALmin, h_xmax, h_yECALmin);
-        myline2=new TLine(h_xmin, h_yHCALmax, h_xmax, h_yHCALmax);
-        myline3=new TLine(h_xmin, h_yHCALmin, h_xmax, h_yHCALmin);
-        myline4=new TLine(h_xmin, h_yECALmax, h_xmax, h_yECALmax);
-        myline1->Draw("same");
-        myline2->Draw("same");
-        myline3->Draw("same");
-        myline4->Draw("same");
-        c_2timexy_gif->Print(TString::Format("gif/2xy/c%lld_2timexy_gif.gif+50",jentry));  
-        delete myline1;
-        delete myline2;
-        delete myline3;
-        delete myline4;
-        delete h2hxytime[ibin];
-
-        c_2timeyz_gif->cd();
-        h2hyztime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
-        h2hyztime[ibin]->Draw();
-        myline1=new TLine(h_yECALmin,h_zmin, h_yECALmin, h_zmax);
-        myline2=new TLine(h_yHCALmax,h_zmin, h_yHCALmax, h_zmax);
-        myline3=new TLine(h_yHCALmin,h_zmin, h_yHCALmin, h_zmax);
-        myline4=new TLine(h_yECALmax,h_zmin, h_yECALmax, h_zmax);
-        myline1->Draw("same");
-        myline2->Draw("same");
-        myline3->Draw("same");
-        myline4->Draw("same");
-        c_2timeyz_gif->Print(TString::Format("gif/2yz/c%lld_2timeyz_gif.gif+20",jentry));
-        delete myline1;
-        delete myline2;
-        delete myline3;
-        delete myline4;
-        delete h2hyztime[ibin];
-
-        c_2timexz_gif->cd();
-        h2hxztime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
-        h2hxztime[ibin]->Draw();
-        c_2timexz_gif->Print(TString::Format("gif/2xz/c%lld_2timexz_gif.gif+20",jentry));  
-        delete h2hxztime[ibin];
-
+          c_3time_gif->cd();
+          h3hpostime[ibin]->SetMarkerStyle(20);
+          h3hpostime[ibin]->SetMarkerSize(0.7);
+          h3hpostime[ibin]->SetMarkerColor(TColor::GetColorPalette(ibin*(254/nbin)));
+          h3hpostime[ibin]->Draw();
+          c_3time_gif->Print(TString::Format("gif/3/c%lld_3time_gif.gif+100",jentry)); 
         c_3time->cd();
-        h3hpostime[ibin]->Draw("SAME");   
-
-
+          h3hpostime[ibin]->SetMarkerStyle(20);
+          h3hpostime[ibin]->SetMarkerSize(0.5);
+          h3hpostime[ibin]->Draw("SAME");  
+          
         c_3energy->cd();
-        h3hposenergy[ibin]->Draw(" SAME");
-      }
+          h3hposenergy[ibin]->SetMarkerStyle(20);
+          h3hposenergy[ibin]->SetMarkerSize(0.7);
+          h3hposenergy[ibin]->SetMarkerColor(ibin);
+          h3hposenergy[ibin]->Draw(" SAME");
+
+      } // end of loop over bins
       
       c_2timexy_gif->Print(TString::Format("gif/2xy/c%lld_2timexy_gif.gif++", jentry));
       c_2timeyz_gif->Print(TString::Format("gif/2yz/c%lld_2timeyz_gif.gif++", jentry));
@@ -351,24 +337,27 @@ void EcalSimHandler::Loop()
       c_3time_gif->Print(TString::Format("gif/3/c%lld_3time_gif.gif++", jentry));
       c_3time->Write();
       c_3energy->Write();     
+      
       for (int ibin=0;ibin<nbin;ibin++)
       {
-      delete h3hpostime[ibin];
-      delete h3hposenergy[ibin];
+        delete h3hpostime[ibin];
+        delete h3hposenergy[ibin];
       }
 
       dir_h1->cd();
-      h1htime->Write("AXIG");
+      h1htime->Write();
+      delete h1htime;
       h1henergy->Write();
+      delete h1henergy;
       dir_h3->cd();
       h3hpos->Write();
-      
-      delete h1htime;
-      delete h1henergy;
       delete h3hpos;
       
+      
 
-    } // end if for the specific event
+    // } // end if for the specific event
+    
+    // delete all the canvas gif and static
     delete c_2timexy_gif;
     delete c_2timeyz_gif;
     delete c_2timexz_gif;
