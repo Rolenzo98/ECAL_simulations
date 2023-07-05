@@ -55,6 +55,7 @@ The information is used by the browser (see TBrowser).*/
 #include <TMath.h>
 
 #include <TString.h>
+#include <string>
 #include <sstream>
 
 using std::vector;
