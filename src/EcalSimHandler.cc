@@ -104,7 +104,6 @@ void EcalSimHandler::Loop()
 
   TFile *storemyfile = new TFile("myfileh3h.root", "recreate");
 
-
     // gErrorIgnoreLevel = kWarning;
     //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
     std::string PARTICLETYPE="Pions";
@@ -116,15 +115,20 @@ void EcalSimHandler::Loop()
     int JUSTONCE=0;
     cout<<"Event\tHits\ttime(s)\ttot(s)\tremaining"<<endl;
     
+    TCanvas *c_1time=new TCanvas(TString::Format("eve%d_1time",NUMERO),TString::Format("c%d_1time",NUMERO),1000,1000);
+    TCanvas *c_2timexy=new TCanvas(TString::Format("eve%d_2timexy",NUMERO),TString::Format("%d_2timexy",NUMERO),1000,1000);
+    TCanvas *c_2timeyz=new TCanvas(TString::Format("eve%d_2timeyz",NUMERO),TString::Format("%d_2timeyz",NUMERO),1000,1000);
+    TCanvas *c_2timexz=new TCanvas(TString::Format("eve%d_2timexz",NUMERO),TString::Format("%d_2timexz",NUMERO),1000,1000);
     
-    const char *PARTICLETYPE_TITLE=PARTICLETYPE.c_str();
-    std::string GIFDIRECTORY = "gif/";
-    std::string BASEDIRECTORY = GIFDIRECTORY+PARTICLETYPE+"/";
-    std::string BASEDIRECTORY1 = BASEDIRECTORY+"1/";
-    std::string BASEDIRECTORYxy = BASEDIRECTORY+"2xy/";
-    std::string BASEDIRECTORYyz = BASEDIRECTORY+"2yz/";
-    std::string BASEDIRECTORYxz = BASEDIRECTORY+"2xz/";
-    std::string BASEDIRECTORY3 = BASEDIRECTORY+"3/";
+    TCanvas *c_2xy=new TCanvas(TString::Format("eve%d_2xy",NUMERO),TString::Format("c%d_2xy",NUMERO),1000,1000);
+    TCanvas *c_2yz=new TCanvas(TString::Format("eve%d_2yz",NUMERO),TString::Format("c%d_2yz",NUMERO),1000,1000);
+    TCanvas *c_2xz=new TCanvas(TString::Format("eve%d_2xz",NUMERO),TString::Format("c%d_2xz",NUMERO),1000,1000);
+
+    TCanvas *c_3time=new TCanvas(TString::Format("eve%d_3time",NUMERO),TString::Format("c%d_3time",NUMERO),1000,1000);
+    TCanvas *c_3time_tot=new TCanvas(TString::Format("eve%d_3time_tot",NUMERO),TString::Format("c%d_3time_tot",NUMERO),1000,1000);
+    TCanvas *c_3energy=new TCanvas(TString::Format("eve%d_3energy",NUMERO),TString::Format("c%d_3energy",NUMERO),1000,1000);
+    TCanvas *c_3pos=new TCanvas(TString::Format("eve%d_3pos",NUMERO),TString::Format("c%d_3pos",NUMERO),1000,1000);
+    TCanvas *c_2enetime=new TCanvas(TString::Format("eve%d_2enetime",NUMERO), TString::Format("c%d_2enetime",NUMERO),1000,1000);
 
   // MAIN` LOOP - Loop over the events (100 times)
   for (Long64_t jentry=0; jentry<nentries; jentry++)
@@ -138,71 +142,6 @@ void EcalSimHandler::Loop()
     nbytes += nb;
     if (Cut(ientry) < 0)
       continue;
-
-    std::string DIRECTORY1=BASEDIRECTORY1+std::to_string(jentry)+"_"+MIOCOLORE+"/";
-    std::string DIRECTORYxy=BASEDIRECTORYxy+std::to_string(jentry)+"_"+MIOCOLORE+"/";
-    std::string DIRECTORYyz=BASEDIRECTORYyz+std::to_string(jentry)+"_"+MIOCOLORE+"/";
-    std::string DIRECTORYxz=BASEDIRECTORYxz+std::to_string(jentry)+"_"+MIOCOLORE+"/";
-    std::string DIRECTORY3=BASEDIRECTORY3+std::to_string(jentry)+"_"+MIOCOLORE+"/";
-
-    if (JUSTONCE==0)
-    {
-      if (std::filesystem::exists(GIFDIRECTORY))
-      {
-        cout<<"MY: The folder "<< GIFDIRECTORY <<" exists"<<endl;
-        if (std::filesystem::exists(BASEDIRECTORY)&&std::filesystem::exists(BASEDIRECTORY1)&&std::filesystem::exists(BASEDIRECTORYxy)&&std::filesystem::exists(BASEDIRECTORYyz)&&std::filesystem::exists(BASEDIRECTORYxz)&&std::filesystem::exists(BASEDIRECTORY3))
-        {
-          cout<<"MY: The folder "<< BASEDIRECTORY <<" and the subfolders already exist"<<endl;
-        }
-        else
-        {
-          cout<<"MY: The folder "<< BASEDIRECTORY <<" does not exist or it's incomplete, the program is going to remove everything and create it"<<endl;
-          std::filesystem::remove_all(BASEDIRECTORY);
-          std::filesystem::create_directory(BASEDIRECTORY);
-          std::filesystem::create_directory(BASEDIRECTORY1);
-          std::filesystem::create_directory(BASEDIRECTORYxy);
-          std::filesystem::create_directory(BASEDIRECTORYyz);
-          std::filesystem::create_directory(BASEDIRECTORYxz);
-          std::filesystem::create_directory(BASEDIRECTORY3);
-        }
-      }
-      else
-      {
-        cout<<"MY: The folder "<< GIFDIRECTORY <<" does not exist, the program is going to create it"<<endl;
-        std::filesystem::create_directory(GIFDIRECTORY);
-        std::filesystem::create_directory(BASEDIRECTORY);
-        std::filesystem::create_directory(BASEDIRECTORY1);
-        std::filesystem::create_directory(BASEDIRECTORYxy);
-        std::filesystem::create_directory(BASEDIRECTORYyz);
-        std::filesystem::create_directory(BASEDIRECTORYxz);
-        std::filesystem::create_directory(BASEDIRECTORY3);
-      }
-      JUSTONCE=1;
-
-    }
-
-    std::filesystem::create_directory(DIRECTORY1);
-    std::filesystem::create_directory(DIRECTORYxy);
-    std::filesystem::create_directory(DIRECTORYyz);
-    std::filesystem::create_directory(DIRECTORYxz);
-    std::filesystem::create_directory(DIRECTORY3);
-
-
-    TCanvas *c_1time=new TCanvas(TString::Format("eve%lld_1time",jentry),TString::Format("c%lld_1time",jentry),1000,1000);
-    TCanvas *c_2timexy=new TCanvas(TString::Format("eve%lld_2timexy",jentry),TString::Format("%lld_2timexy",jentry),1000,1000);
-    TCanvas *c_2timeyz=new TCanvas(TString::Format("eve%lld_2timeyz",jentry),TString::Format("%lld_2timeyz",jentry),1000,1000);
-    TCanvas *c_2timexz=new TCanvas(TString::Format("eve%lld_2timexz",jentry),TString::Format("%lld_2timexz",jentry),1000,1000);
-    
-    TCanvas *c_2xy=new TCanvas(TString::Format("eve%lld_2xy",jentry),TString::Format("c%lld_2xy",jentry),1000,1000);
-    TCanvas *c_2yz=new TCanvas(TString::Format("eve%lld_2yz",jentry),TString::Format("c%lld_2yz",jentry),1000,1000);
-    TCanvas *c_2xz=new TCanvas(TString::Format("eve%lld_2xz",jentry),TString::Format("c%lld_2xz",jentry),1000,1000);
-
-    TCanvas *c_3time=new TCanvas(TString::Format("eve%lld_3time",jentry),TString::Format("c%lld_3time",jentry),1000,1000);
-    TCanvas *c_3time_tot=new TCanvas(TString::Format("eve%lld_3time_tot",jentry),TString::Format("c%lld_3time_tot",jentry),1000,1000);
-    TCanvas *c_3energy=new TCanvas(TString::Format("eve%lld_3energy",jentry),TString::Format("c%lld_3energy",jentry),1000,1000);
-    TCanvas *c_3pos=new TCanvas(TString::Format("eve%lld_3pos",jentry),TString::Format("c%lld_3pos",jentry),1000,1000);
-    TCanvas *c_2enetime=new TCanvas(TString::Format("eve%lld_2enetime",jentry), TString::Format("c%lld_2enetime",jentry),1000,1000);
-
 
     TLatex *text_ecalxy=new TLatex(-1900,1830,"ECAL");
     TLatex *text_hcalxy=new TLatex(-1900,2650,"HCAL");
