@@ -18,7 +18,6 @@ void EcalSimHandler::Loop()
   // Declaring numbers, parameters and variables
   // declaring the number of binning for the time and energy division
 
-
   double tbinlowedge[nbinlowedge];
   // Creating the binning for the time and energy division
   for (int i=0;i<nbinlowedge;i++)
@@ -26,23 +25,26 @@ void EcalSimHandler::Loop()
     int ipowt=i-10;
     tbinlowedge[i]=std::pow(2,ipowt);    
   }
-
   float tmin=100;
   float tmax=0;
   float emin=100;
   float emax=0;
 
-
   cout<<"Event\tHits\ttime(s)\ttot(s)\tremaining"<<endl;
-
-
-
 
   // Declaring histograms, lines, etc.
   // declaration histograms 1D
   TH1F *h1htime = new TH1F(TString::Format("h1htime_%d",NUMBER), 
     TString::Format("#splitline{%s Time}{Event %d};Time (ns); Counts",PARTICLETYPE,NUMBER),
     nbin, tbinlowedge); //histogram of the hits time
+
+  TH1F *h1henergytime[nbin_10]; 
+  for (int ibin=0; ibin<nbin_10; ibin++)
+  {
+    h1henergytime[ibin]= new TH1F(TString::Format("h1henergytime_bin%d",ibin),
+      TString::Format("#splitline{%s Energy at time}{%.3fns-%.3fns)};Energy (GeV); Counts",PARTICLETYPE,tbinlowedge_10[ibin],tbinlowedge_10[ibin+1]),
+      1000,0,0.06);  
+  }
 
   // declaration histograms 2D
   TH2D *h2henergytime=new TH2D("h2henergytime",
@@ -90,8 +92,16 @@ void EcalSimHandler::Loop()
       if (scene[ihit]<emin) emin=scene[ihit];
       if (scene[ihit]>emax) emax=scene[ihit];
         h2henergytime->Fill(sctime[ihit],scene[ihit]);
+      for (int ibin=0; ibin<nbin_10; ibin++)
+      {
+        if (sctime[ihit]>tbinlowedge_10[ibin]&&sctime[ihit]<tbinlowedge_10[ibin+1])
+        {
+          h1henergytime[ibin]->Fill(scene[ihit]);
+        }
+      }
       }
     }
+
 
     if (jentry==NUMBER)
     {  
@@ -132,13 +142,21 @@ void EcalSimHandler::Loop()
   h1htime->Write();
   h2henergytime->Write();
 
-  TDirectory *dir_h3hpos = storemyfile->mkdir("h3hpos");
-  dir_h3hpos->cd();
+  TDirectory *dir_h3hpostime = storemyfile->mkdir("h3hpostime");
+  dir_h3hpostime->cd();
   h3hpos->Write();
   for (int ibin=0; ibin<nbin; ibin++)
   {
     h3hpostime[ibin]->Write();
   }
+
+  TDirectory *dir_h1henergytime = storemyfile->mkdir("h1henergytime");
+  dir_h1henergytime->cd();
+  for (int ibin=0; ibin<nbin_10; ibin++)
+  {
+    h1henergytime[ibin]->Write();
+  }
+
   storemyfile->cd();
 
   storemyfile->Close();
