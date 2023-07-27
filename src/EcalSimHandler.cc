@@ -1,9 +1,7 @@
 #define EcalSimHandler_cxx
 #include "EcalSimHandler.hh"
 #include "CreateHisto.hh"
-
-
-
+#include "Initial_Variables.hh"
 
 void EcalSimHandler::Loop()
 {
@@ -19,8 +17,7 @@ void EcalSimHandler::Loop()
 
   // Declaring numbers, parameters and variables
   // declaring the number of binning for the time and energy division
-  int nbin=24;
-  int nbinlowedge=nbin+1;
+
 
   double tbinlowedge[nbinlowedge];
   // Creating the binning for the time and energy division
@@ -30,56 +27,12 @@ void EcalSimHandler::Loop()
     tbinlowedge[i]=std::pow(2,ipowt);    
   }
 
-  // double ebinlowedge[nbinlowedge];
-  // declaring the limits of the histogram
-  // declaring the limits of the histogram 2D
-  int h_xmin=-2000;
-  int h_xmax=2000;
-  int h_ymin=1750;
-  int h_ymax=3500;
-  int h_zmin=-3000;
-  int h_zmax=3000;
-  int h_yECALmin=1808;
-  int h_yECALmax=2028;
-  int h_yHCALmin=h_yECALmax;
-  int h_yHCALmax=3440;
-  // declaring the limits of the histogram 3D
-  // float h_xmin3D;
-  // float h_xmax3D;
-  // float h_ymin3D;
-  // float h_ymax3D;
-  // float h_zmin3D;
-  // float h_zmax3D;
-  // float enemin;
-  // float enemax;
-  // float timemin;
-  // float timemax;
-
-  // float h_xmin3Dtot;
-  // float h_xmax3Dtot;
-  // float h_ymin3Dtot;
-  // float h_ymax3Dtot;
-  // float h_zmin3Dtot;
-  // float h_zmax3Dtot;
-  // float enemintot;
-  // float enemaxtot;
-  // float timemintot;
-  // float timemaxtot;
-
   float tmin=100;
   float tmax=0;
   float emin=100;
   float emax=0;
 
-  // gErrorIgnoreLevel = kWarning;
-  //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
-  std::string PARTICLETYPE="Pions";
-  int NUMERO=58; //6 for pions, 34 for electrons
-  std::string MIOCOLORE="arcobaleno"; //"nero" for kBlack, "arcobaleno" for tcolor::krainbow
-  Color_t mycolor;
-  float MISURA=1;
-  //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
-  int JUSTONCE=0;
+
   cout<<"Event\tHits\ttime(s)\ttot(s)\tremaining"<<endl;
 
 
@@ -87,27 +40,29 @@ void EcalSimHandler::Loop()
 
   // Declaring histograms, lines, etc.
   // declaration histograms 1D
-  TH1F *h1htime = new TH1F(TString::Format("h1htime_%d",NUMERO), 
-      TString::Format("h1htime_%d; time (ns); counts",NUMERO),
-      nbin, tbinlowedge); //histogram of the hits time
+  TH1F *h1htime = new TH1F(TString::Format("h1htime_%d",NUMBER), 
+    TString::Format("#splitline{%s Time}{Event %d};Time (ns); Counts",PARTICLETYPE,NUMBER),
+    nbin, tbinlowedge); //histogram of the hits time
 
   // declaration histograms 2D
-  TH2D *h2henergytime=new TH2D("h2henergytime","h2henergytime;Time (ns);Energy (GeV)",
-  1000,0,32000,
-  1000,0,0.06);  
+  TH2D *h2henergytime=new TH2D("h2henergytime",
+    "h2henergytime;Time (ns);Energy (GeV)",
+    1000,0,32000,
+    1000,0,0.06);  
   // declaration histograms 3D
-  TH3D *h3hpos=new TH3D(TString::Format("h3hpos_%d",NUMERO),"Hist in 3D", 
-        100, h_xmin, h_xmax, 
-        100, h_ymin, h_ymax, 
-        100, h_zmin, h_zmax); //cumulative histogram all hits
+  TH3D *h3hpos=new TH3D(TString::Format("h3hpos_%d",NUMBER),
+    TString::Format("#splitline{%s 3D}{Event %d};X (mm);Y (mm);Z (mm)",PARTICLETYPE,NUMBER), 
+    100, h_xmin, h_xmax, 
+    100, h_ymin, h_ymax, 
+    100, h_zmin, h_zmax); //cumulative histogram all hits
 
   TH3D *h3hpostime[nbin]; //histogram all hits in bin time
   for(int ibin=0; ibin<nbin; ibin++){
-    h3hpostime[ibin]= new TH3D(TString::Format("h3hpostime_%d_bin%d",NUMERO,ibin),
-    TString::Format("h3hpostime_%d_bin%d;X (mm);Y (mm);Z (mm)",NUMERO,ibin),
-    100,h_xmin,h_xmax,
-    100,h_ymin,h_ymax,
-    100,h_zmin,h_zmax);  
+    h3hpostime[ibin]= new TH3D(TString::Format("h3hpostime_%d_bin%d",NUMBER,ibin),
+      TString::Format("#splitline{%s 3D}{#splitline{Event %d}{Interval %d (%.3fns-%.3fns)}};X (mm);Y (mm);Z (mm)",PARTICLETYPE,NUMBER,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]),
+      100,h_xmin,h_xmax,
+      100,h_ymin,h_ymax,
+      100,h_zmin,h_zmax);  
   }
 
 
@@ -128,7 +83,7 @@ void EcalSimHandler::Loop()
 
     for (int ihit=0; ihit<nsch;ihit++)
     {
-      if (scene[ihit]>0.0001)
+      if (scene[ihit]>energy_threshold)
       {
       if (sctime[ihit]<tmin) tmin=sctime[ihit];
       if (sctime[ihit]>tmax) tmax=sctime[ihit];
@@ -138,7 +93,7 @@ void EcalSimHandler::Loop()
       }
     }
 
-    if (jentry==NUMERO)
+    if (jentry==NUMBER)
     {  
 
       for (int ibin=0; ibin<nbin; ibin++)
@@ -158,7 +113,6 @@ void EcalSimHandler::Loop()
         } // end of hit loop
 
       } // end of time loop
-      
     } // end if for the specific event
     
     auto stopevent = high_resolution_clock::now(); 
