@@ -35,25 +35,29 @@ void EcalSimHandler::Loop()
   // Declaring histograms, lines, etc.
   // declaration histograms 1D
   TH1F *h1htime = new TH1F(TString::Format("h1htime_%d",NUMBER), 
-    TString::Format("#splitline{%s Time}{Event %d};Time (ns); Counts",PARTICLETYPE,NUMBER),
+    TString::Format("#splitline{%s Time}{Event %d};Time (ns); Counts",PARTICLETYPE_TITLE,NUMBER),
     nbin, tbinlowedge); //histogram of the hits time
 
   TH1F *h1henergytime[nbin_10]; 
   for (int ibin=0; ibin<nbin_10; ibin++)
   {
     h1henergytime[ibin]= new TH1F(TString::Format("h1henergytime_bin%d",ibin),
-      TString::Format("#splitline{%s Energy at time}{%.3fns-%.3fns)};Energy (GeV); Counts",PARTICLETYPE,tbinlowedge_10[ibin],tbinlowedge_10[ibin+1]),
+      TString::Format("#splitline{%s Energy at time}{%.3fns-%.3fns)};Energy (GeV); Counts",PARTICLETYPE_TITLE,tbinlowedge_10[ibin],tbinlowedge_10[ibin+1]),
       1000,0,0.06);  
   }
 
   // declaration histograms 2D
   TH2D *h2henergytime=new TH2D("h2henergytime",
     "h2henergytime;Time (ns);Energy (GeV)",
-    1000,0,32000,
+    nbin_10,0,tbinlowedge_10[nbin_10],
     1000,0,0.06);  
+  TH2D *h2henergytimebin=new TH2D("h2henergytimebin",
+    "h2henergytimebin;Time (ns);Energy (GeV)",
+    1000,0,32000,
+    1000,0,0.06);
   // declaration histograms 3D
   TH3D *h3hpos=new TH3D(TString::Format("h3hpos_%d",NUMBER),
-    TString::Format("#splitline{%s 3D}{Event %d};X (mm);Y (mm);Z (mm)",PARTICLETYPE,NUMBER), 
+    TString::Format("#splitline{%s 3D}{Event %d};X (mm);Y (mm);Z (mm)",PARTICLETYPE_TITLE,NUMBER), 
     100, h_xmin, h_xmax, 
     100, h_ymin, h_ymax, 
     100, h_zmin, h_zmax); //cumulative histogram all hits
@@ -61,7 +65,7 @@ void EcalSimHandler::Loop()
   TH3D *h3hpostime[nbin]; //histogram all hits in bin time
   for(int ibin=0; ibin<nbin; ibin++){
     h3hpostime[ibin]= new TH3D(TString::Format("h3hpostime_%d_bin%d",NUMBER,ibin),
-      TString::Format("#splitline{%s 3D}{#splitline{Event %d}{Interval %d (%.3fns-%.3fns)}};X (mm);Y (mm);Z (mm)",PARTICLETYPE,NUMBER,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]),
+      TString::Format("#splitline{%s 3D}{#splitline{Event %d}{Interval %d (%.3fns-%.3fns)}};X (mm);Y (mm);Z (mm)",PARTICLETYPE_TITLE,NUMBER,ibin,tbinlowedge[ibin],tbinlowedge[ibin+1]),
       100,h_xmin,h_xmax,
       100,h_ymin,h_ymax,
       100,h_zmin,h_zmax);  
@@ -150,7 +154,8 @@ void EcalSimHandler::Loop()
     h3hpostime[ibin]->Write();
   }
 
-  TDirectory *dir_h1henergytime = storemyfile->mkdir("h1henergytime");
+  TDirectory *dir_h1henergytime = storemyfile->mkdir(TString::Format("h1henergytime_%s",PARTICLETYPE_TITLE));
+  // TDirectory *dir_h1henergytime = storemyfile->mkdir("h1henergytime");
   dir_h1henergytime->cd();
   for (int ibin=0; ibin<nbin_10; ibin++)
   {

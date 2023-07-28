@@ -26,7 +26,8 @@ int nbin_10=sizeof(tbinlowedge_10)/sizeof(tbinlowedge_10[1]);
 
 // gErrorIgnoreLevel = kWarning;
 //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
-std::string PARTICLETYPE="Pions";
+std::string PARTICLETYPE="Electrons";
+const char *PARTICLETYPE_TITLE=PARTICLETYPE.c_str();
 int NUMBER=58; //6 for pions, 34 for electrons
 std::string MIOCOLORE="arcobaleno"; //"nero" for kBlack, "arcobaleno" for tcolor::krainbow
 Color_t mycolor;
