@@ -169,7 +169,8 @@ void EcalSimHandler::Loop()
   // time check
   auto stop= high_resolution_clock::now(); 
   auto duration = duration_cast<seconds>(stop - start);
-  cout << "Time taken by program: "<< duration.count() << " seconds" << endl;
+  cout << "Total time taken by program: "<< duration.count() << " seconds" << endl;
+  cout<<"End of the program"<<endl;
   
 } // end of main function
 
